@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,19 +19,37 @@
         .lumina-btn { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); transition: all 0.3s ease; }
         .lumina-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4); }
         
-        .ad-container {
+        /* SUPPORT BOX */
+        .support-container {
             position: relative;
-            z-index: 10;
             margin-top: 1.5rem;
             width: 100%;
-            height: 250px;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            text-align: center;
             border-radius: 24px;
-            transition: all 0.5s ease;
-            overflow: hidden;
+            border: 1px solid rgba(251, 191, 36, 0.1);
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), rgba(2, 6, 23, 0.9));
+        }
+
+        .donate-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-[10px] font-black uppercase tracking-widest transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .donate-btn:hover {
+            background: #fbbf24;
+            color: #000;
+            transform: scale(1.05);
+            border-color: #fbbf24;
         }
 
         .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #fbbf24; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; }
@@ -70,10 +88,10 @@
     <div id="confirm-modal" onclick="closeConfirm()">
         <div class="glass p-8 rounded-[2rem] border-white/10 max-w-sm w-full text-center space-y-6 shadow-2xl" onclick="event.stopPropagation()">
             <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto text-2xl">✕</div>
-            <h3 class="text-lg font-black uppercase tracking-tighter">Eliminare?</h3>
+            <h3 class="text-lg font-black uppercase tracking-tighter">Delete?</h3>
             <div class="flex flex-col gap-3">
-                <button id="confirm-yes" class="bg-red-500 text-white font-black py-4 rounded-2xl uppercase text-[10px] tracking-widest hover:bg-red-600 transition-colors">Conferma</button>
-                <button onclick="closeConfirm()" class="bg-white/5 text-slate-400 font-bold py-4 rounded-2xl uppercase text-[10px] tracking-widest hover:bg-white/10 transition-colors">Annulla</button>
+                <button id="confirm-yes" class="bg-red-500 text-white font-black py-4 rounded-2xl uppercase text-[10px] tracking-widest hover:bg-red-600 transition-colors">Confirm</button>
+                <button onclick="closeConfirm()" class="bg-white/5 text-slate-400 font-bold py-4 rounded-2xl uppercase text-[10px] tracking-widest hover:bg-white/10 transition-colors">Cancel</button>
             </div>
         </div>
     </div>
@@ -88,16 +106,16 @@
                 <div class="nav-arrow arrow-right" onclick="nextImg()">&#10095;</div>
             </div>
             <div class="flex gap-4 relative">
-                <button id="modal-restore-btn" class="bg-yellow-500 text-black px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest active:scale-95">Ripristina</button>
+                <button id="modal-restore-btn" class="bg-yellow-500 text-black px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest active:scale-95">Restore</button>
                 <div class="relative">
-                    <button id="dl-btn" class="bg-white/10 text-white px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest border border-white/10">Scarica</button>
+                    <button id="dl-btn" class="bg-white/10 text-white px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest border border-white/10">Download</button>
                     <div id="dl-menu" class="download-menu shadow-2xl">
                         <button onclick="downloadFormat('png')">PNG</button>
                         <button onclick="downloadFormat('jpg')">JPG</button>
                         <button onclick="downloadFormat('webp')">WEBP</button>
                     </div>
                 </div>
-                <button onclick="askDeleteCurrent()" class="bg-red-500/10 text-red-500 px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest border border-red-500/20">Elimina</button>
+                <button onclick="askDeleteCurrent()" class="bg-red-500/10 text-red-500 px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest border border-red-500/20">Delete</button>
             </div>
         </div>
     </div>
@@ -111,7 +129,7 @@
                 </div>
                 <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em] mt-1">Vivid Visions Crafted</p>
             </div>
-            <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest">In attesa...</div>
+            <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest">Waiting...</div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -123,17 +141,17 @@
                         <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm" rows="4"></textarea>
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-red-500/40 uppercase tracking-widest">Esclusioni</label>
+                        <label class="text-[10px] font-bold text-red-500/40 uppercase tracking-widest">Negative Prompt</label>
                         <textarea id="negative" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-3 text-white text-xs" rows="2"></textarea>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <select id="style" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
-                            <option value="none">Nessuno</option>
-                            <option value="photorealistic">Fotorealismo</option>
+                            <option value="none">None</option>
+                            <option value="photorealistic">Photorealistic</option>
                             <option value="cyberpunk">Cyberpunk</option>
                             <option value="fantasy">Epic Fantasy</option>
                             <option value="anime">Anime Style</option>
-                            <option value="oil">Olio su Tela</option>
+                            <option value="oil">Oil Painting</option>
                         </select>
                         <select id="ratio" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
                             <option value="1:1">1:1</option>
@@ -145,16 +163,19 @@
                         <input type="checkbox" id="enhance" class="w-4 h-4 accent-yellow-500">
                         <span class="text-[10px] font-bold text-slate-300 uppercase">Vivid Mode</span>
                     </label>
-                    <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Genera Visione</button>
+                    <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Generate Vision</button>
                 </div>
 
-                <div id="ad-banner" class="ad-container glass">
-                    <span id="ad-label" class="text-[8px] font-black text-white/5 tracking-[0.5em] mb-4 uppercase transition-opacity duration-500">Sponsor Area</span>
-                    <div class="w-12 h-px bg-white/10 mb-6"></div>
-                    <div id="ad-content" class="transition-all duration-500 opacity-100 transform translate-y-0">
-                        <span id="ad-title" class="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] block">Spazio Pubblicitario</span>
-                        <span id="ad-sub" class="text-[9px] text-white/10 mt-1 italic tracking-widest block">300 x 250</span>
-                    </div>
+                <div class="support-container">
+                    <span class="text-[8px] font-black text-yellow-500/50 tracking-[0.5em] mb-4 uppercase">Support Lumina</span>
+                    <p class="text-[11px] text-slate-400 font-medium leading-relaxed mb-6">
+                        Help us keep the servers running and improve the artificial intelligence.
+                    </p>
+                    <a href="https://paypal.me/TUO_LINK" target="_blank" class="donate-btn">
+                        <span>☕</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest">Buy me a coffee</span>
+                    </a>
+                    <span class="text-[8px] text-white/10 mt-6 italic tracking-tighter">Every contribution makes a difference</span>
                 </div>
             </div>
 
@@ -162,11 +183,11 @@
                 <div id="preview-area" class="glass min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden border-white/5">
                     <div id="loader" class="hidden flex flex-col items-center gap-4">
                         <div class="loader"></div>
-                        <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Generazione in corso...</p>
+                        <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Generation in progress...</p>
                     </div>
                     <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl max-h-[500px] rounded-2xl cursor-zoom-in">
                     <div id="ph" class="text-8xl font-black italic opacity-5 uppercase select-none">Lumina</div>
-                    <button id="var-btn" onclick="generateVariation()" class="hidden absolute bottom-6 right-6 bg-black/40 backdrop-blur-xl px-6 py-3 rounded-full text-[10px] font-black uppercase border border-white/10 hover:bg-yellow-500 hover:text-black transition-all">Variazione</button>
+                    <button id="var-btn" onclick="generateVariation()" class="hidden absolute bottom-6 right-6 bg-black/40 backdrop-blur-xl px-6 py-3 rounded-full text-[10px] font-black uppercase border border-white/10 hover:bg-yellow-500 hover:text-black transition-all">Variation</button>
                 </div>
 
                 <div class="glass p-6 rounded-3xl space-y-4 border-white/5">
@@ -194,42 +215,6 @@
         let lastSeed = -1;
         let deleteTargetIdx = -1;
 
-        // --- LOGICA BANNER INTELLIGENTE ---
-        const ads = [
-            { title: "NVIDIA RTX 5090", sub: "Potenza AI estrema" },
-            { title: "ADOBE CREATIVE CLOUD", sub: "Libera la tua fantasia" },
-            { title: "DIGITAL OCEAN", sub: "Cloud Hosting per AI" },
-            { title: "LUMINA PRO", sub: "Rimuovi la pubblicità" }
-        ];
-        let currentAd = 0;
-        let lastActivity = Date.now();
-
-        function rotateAd() {
-            // Soluzione 3: Non ruotare se l'utente è inattivo da più di 5 minuti
-            if (Date.now() - lastActivity > 300000) return;
-
-            const content = document.getElementById('ad-content');
-            content.style.opacity = '0';
-            content.style.transform = 'translateY(10px)';
-
-            setTimeout(() => {
-                currentAd = (currentAd + 1) % ads.length;
-                document.getElementById('ad-title').innerText = ads[currentAd].title;
-                document.getElementById('ad-sub').innerText = ads[currentAd].sub;
-                content.style.opacity = '1';
-                content.style.transform = 'translateY(0)';
-            }, 500);
-        }
-
-        // Soluzione 2: Timer ogni 60 secondi
-        setInterval(rotateAd, 60000);
-
-        // Monitoraggio attività per la pausa
-        window.addEventListener('mousemove', () => lastActivity = Date.now());
-        window.addEventListener('keydown', () => lastActivity = Date.now());
-
-        // --- FINE LOGICA BANNER ---
-
         document.getElementById('dl-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             const m = document.getElementById('dl-menu');
@@ -255,10 +240,7 @@
         async function processAndGenerate(seedToUse = -1) {
             const promptVal = document.getElementById('prompt').value;
             if(!promptVal) return;
-
-            // Soluzione 1: Ruota il banner al click del tasto genera
-            rotateAd();
-
+            
             const currentParams = {
                 prompt: promptVal, negative_prompt: document.getElementById('negative').value,
                 style: document.getElementById('style').value, ratio: document.getElementById('ratio').value,
@@ -284,7 +266,7 @@
                 fullHistory.unshift({ ...currentParams, url, seed: d.seed, hex: d.image });
                 renderGallery();
                 document.getElementById('gallery').scrollTo({ left: 0, behavior: 'smooth' });
-            } catch(e) { alert("Server in caricamento..."); }
+            } catch(e) { alert("Server is loading..."); }
             finally { document.getElementById('loader').classList.add('hidden'); }
         }
 
