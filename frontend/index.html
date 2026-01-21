@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=IL_TUO_ID_QUI"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'IL_TUO_ID_QUI');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUMINA AI | Studio</title>
@@ -68,8 +76,6 @@
 
         /* MODALS */
         #modal { display: none; position: fixed; inset: 0; z-index: 100; backdrop-filter: blur(20px); background: rgba(0,0,0,0.9); overflow-y: auto; padding: 40px 0; }
-        
-        /* Fixed: Confirm Modal Alignment */
         #confirm-modal { display: none; position: fixed; inset: 0; z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(10px); background: rgba(0,0,0,0.85); }
         
         .modal-content { width: 90%; max-width: 1400px; margin: 0 auto; position: relative; display: flex; flex-direction: column; align-items: center; gap: 24px; }
@@ -111,11 +117,9 @@
         
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="modal-counter" class="text-[10px] font-black tracking-[0.3em] text-yellow-500 uppercase">0 / 0</div>
-            
             <div class="img-container">
                 <img id="modal-img" src="">
             </div>
-
             <div class="flex gap-4 relative pb-10">
                 <button id="modal-restore-btn" class="bg-yellow-500 text-black px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest active:scale-95">Restore</button>
                 <div class="relative">
