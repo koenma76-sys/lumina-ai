@@ -1,17 +1,20 @@
 import os
+import requests
+import uvicorn
+import random
+import base64
+import io
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import requests, uvicorn, random, base64, io
 from zipfile import ZipFile, ZIP_DEFLATED
 
 app = FastAPI()
 
-# CORS: Qui devi mettere l'URL che ti darà Vercel (es. https://lumina.vercel.app)
-# Per ora lasciamo "*" per facilità, ma in produzione è meglio l'URL specifico.
+# Configurazione CORS per permettere al Frontend (Vercel) di chiamare il Backend (Render)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # In produzione potrai mettere l'URL del tuo dominio .net
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,8 +30,7 @@ class GenRequest(BaseModel):
 
 @app.get("/")
 async def health_check():
-    # Questo endpoint serve per il "ping" di risveglio
-    return {"status": "online", "message": "Lumina Backend is Awake"}
+    return {"status": "online", "message": "Lumina Backend is running on Render"}
 
 @app.post("/generate")
 async def generate(data: GenRequest):
@@ -36,31 +38,33 @@ async def generate(data: GenRequest):
         "photorealistic": "professional photography, raw photo, 8k, highly detailed",
         "cyberpunk": "neon lights, synthwave aesthetic, futuristic city",
         "fantasy": "ethereal lighting, magical world, highly detailed digital art",
-        "anime": "studio ghibli style, vibrant colors, clean lines",
-        "oil": "classical oil painting, textured canvas, brushstrokes"
+        "anime": "clean anime style, vibrant colors, studio ghibli inspired",
+        "oil": "oil painting, thick brushstrokes, canvas texture, museum quality"
     }
 
     style_mod = styles.get(data.style, "")
     final_prompt = f"{style_mod}, {data.prompt}" if style_mod else data.prompt
     
     if data.enhance:
-        final_prompt += ", cinematic lighting, masterpiece, high resolution"
+        final_prompt += ", cinematic lighting, masterpiece, ultra high res, sharp focus"
 
     current_seed = data.seed if data.seed != -1 else random.randint(0, 999999)
     
-    # Dimensioni basate sul ratio
+    # Dimensioni in base al rapporto (Ratio)
     w, h = 1024, 1024
     if data.ratio == "16:9": w, h = 1280, 720
     elif data.ratio == "9:16": w, h = 720, 1280
 
     api_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(final_prompt)}?seed={current_seed}&width={w}&height={h}&nologo=true"
+    if data.negative_prompt:
+        api_url += f"&negative={requests.utils.quote(data.negative_prompt)}"
     
     try:
         r = requests.get(api_url, timeout=60)
-        # Inviamo l'immagine come stringa hex per evitare problemi di buffering su Render Free
+        # Invio l'immagine in formato HEX per massima compatibilità
         return {"image": r.content.hex(), "seed": current_seed}
-    except:
-        raise HTTPException(status_code=500, detail="Errore generazione")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/zip")
 async def make_zip(data: dict):
@@ -68,11 +72,14 @@ async def make_zip(data: dict):
     buf = io.BytesIO()
     with ZipFile(buf, "w", ZIP_DEFLATED) as f:
         for i, hex_data in enumerate(imgs):
-            f.writestr(f"lumina_{i}.png", base64.b16decode(hex_data.upper()))
+            try:
+                img_data = base64.b16decode(hex_data.upper())
+                f.writestr(f"lumina_art_{i}.png", img_data)
+            except: continue
     buf.seek(0)
     return {"zip": base64.b64encode(buf.getvalue()).decode()}
 
 if __name__ == "__main__":
-    # IMPORTANTE: Render assegna una porta dinamica tramite variabile d'ambiente
+    # Render assegna la porta automaticamente tramite variabile d'ambiente
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
