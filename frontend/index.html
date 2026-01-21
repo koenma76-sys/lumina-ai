@@ -66,13 +66,16 @@
         .gallery-container-rel:hover .scroll-arrow { opacity: 1; pointer-events: auto; }
         .arrow-left-g { left: -16px; } .arrow-right-g { right: -16px; }
 
-        /* MODAL UPDATED FOR FULL RESOLUTION */
+        /* MODALS */
         #modal { display: none; position: fixed; inset: 0; z-index: 100; backdrop-filter: blur(20px); background: rgba(0,0,0,0.9); overflow-y: auto; padding: 40px 0; }
+        
+        /* Fixed: Confirm Modal Alignment */
+        #confirm-modal { display: none; position: fixed; inset: 0; z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(10px); background: rgba(0,0,0,0.85); }
+        
         .modal-content { width: 90%; max-width: 1400px; margin: 0 auto; position: relative; display: flex; flex-direction: column; align-items: center; gap: 24px; }
         .img-container { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; }
         
-        /* Removed max-height to allow full resolution assessment */
-        #modal-img { shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 12px; max-width: 100%; height: auto; display: block; }
+        #modal-img { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 12px; max-width: 100%; height: auto; display: block; }
         
         .nav-arrow { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.05); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; z-index: 120; border: 1px solid rgba(255,255,255,0.1); transition: 0.2s; }
         .nav-arrow:hover { background: #fbbf24; color: black; }
@@ -294,8 +297,8 @@
             const item = fullHistory[index];
             document.getElementById('modal-img').src = item.url;
             document.getElementById('modal-counter').innerText = `${index + 1} / ${fullHistory.length}`;
-            document.getElementById('modal').style.display = 'block'; // Changed to block for scroll
-            document.body.style.overflow = 'hidden'; // Lock body scroll
+            document.getElementById('modal').style.display = 'block'; 
+            document.body.style.overflow = 'hidden'; 
             document.getElementById('modal-restore-btn').onclick = (e) => { 
                 e.stopPropagation(); restoreParams(item); closeModal(); 
             };
@@ -303,7 +306,7 @@
 
         function closeModal() { 
             document.getElementById('modal').style.display = 'none'; 
-            document.body.style.overflow = 'auto'; // Unlock body scroll
+            document.body.style.overflow = 'auto'; 
         }
         function nextImg() { openModal(currentIdx + 1); }
         function prevImg() { openModal(currentIdx - 1); }
