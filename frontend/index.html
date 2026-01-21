@@ -8,6 +8,7 @@
     <style>
         body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         
+        /* Rimozione Totale Outline e Selezioni */
         *, *:focus, *:active, *:focus-visible {
             outline: none !important;
             -webkit-tap-highlight-color: transparent !important;
@@ -95,22 +96,22 @@
 
     <div class="max-w-6xl mx-auto space-y-8">
         <header class="flex justify-between items-end border-b border-white/5 pb-6">
-            <div style="padding-right: 25px;">
+            <div class="pr-8">
                 <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase">LUMINA VISUALS</h1>
                 <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em] mt-1">Vivid Visions Crafted</p>
             </div>
-            <div id="server-status" class="px-4 py-2 bg-slate-800 rounded-full text-[10px] font-bold uppercase tracking-widest text-slate-500 border border-white/5 transition-all">In attesa...</div>
+            <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest transition-all duration-500">Offline</div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="glass p-8 rounded-3xl space-y-6 shadow-2xl border-white/5 h-fit">
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prompt</label>
-                    <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm focus:border-yellow-500/50" rows="4"></textarea>
+                    <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm" rows="4"></textarea>
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-red-500/40 uppercase tracking-widest">Esclusioni</label>
-                    <textarea id="negative" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-3 text-white text-xs focus:border-red-500/30" rows="2"></textarea>
+                    <textarea id="negative" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-3 text-white text-xs" rows="2"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <select id="style" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white cursor-pointer">
@@ -127,7 +128,7 @@
                         <option value="9:16">9:16</option>
                     </select>
                 </div>
-                <label class="flex items-center gap-3 cursor-pointer p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10">
+                <label class="flex items-center gap-3 cursor-pointer p-3 rounded-2xl bg-white/5 border border-white/5">
                     <input type="checkbox" id="enhance" class="w-4 h-4 accent-yellow-500">
                     <span class="text-[10px] font-bold text-slate-300 uppercase">Vivid Mode</span>
                 </label>
@@ -138,7 +139,7 @@
                 <div id="preview-area" class="glass min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden border-white/5">
                     <div id="loader" class="hidden flex flex-col items-center gap-4">
                         <div class="loader"></div>
-                        <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Generazione in corso...</p>
+                        <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Vivid Visions Crafted</p>
                     </div>
                     <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl border border-white/5 max-h-[500px] rounded-2xl cursor-zoom-in">
                     <div id="ph" class="text-8xl font-black italic opacity-5 uppercase select-none">Lumina</div>
@@ -160,8 +161,7 @@
     </div>
 
     <script>
-        const API_URL = "https://lumina-ai-l1hs.onrender.com/"; 
-        
+        const API_URL = "https://lumina-ai-l1hs.onrender.com"; 
         let fullHistory = []; 
         let currentIdx = -1;
         let lastSeed = -1;
@@ -176,20 +176,17 @@
         window.onclick = () => { document.getElementById('dl-menu').style.display = 'none'; };
 
         async function checkServer() {
-            const s = document.getElementById('server-status');
             try {
                 const r = await fetch(API_URL + "/");
                 if(r.ok) {
+                    const s = document.getElementById('server-status');
                     s.innerText = "Online";
-                    s.className = "px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 text-[10px] font-bold uppercase tracking-widest";
+                    s.className = "px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 text-[10px] font-bold uppercase tracking-widest transition-all duration-500";
                 }
-            } catch(e) {
-                console.error("Connessione API Fallita:", e);
-                s.innerText = "Offline/Wakeup";
-            }
+            } catch(e) { console.log("Server Wakeup..."); }
         }
         checkServer();
-        setInterval(checkServer, 15000);
+        setInterval(checkServer, 10000);
 
         async function processAndGenerate(seedToUse = -1) {
             const promptVal = document.getElementById('prompt').value;
@@ -218,7 +215,7 @@
                 document.getElementById('var-btn').classList.remove('hidden');
                 fullHistory.unshift({ ...currentParams, url, seed: d.seed, hex: d.image });
                 renderGallery();
-            } catch(e) { alert("Errore di connessione. Riprova tra poco."); }
+            } catch(e) { alert("Il server sta caricando. Riprova tra 30 secondi."); }
             finally { document.getElementById('loader').classList.add('hidden'); }
         }
 
