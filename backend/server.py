@@ -33,39 +33,42 @@ async def health_check():
 
 @app.post("/generate")
 async def generate(data: GenRequest):
-    # STILI OTTIMIZZATI PER COERENZA VISIVA
+    # STILI OTTIMIZZATI CON PAROLE CHIAVE "PESANTI"
     styles = {
-        "photorealistic": "ultra-realistic portait, 8k resolution, highly detailed skin texture, cinematic lighting, sharp focus, professional photography",
-        "cyberpunk": "cyberpunk aesthetic, neon city lights, futuristic, synthwave color palette, high contrast, detailed mechanical elements",
-        "fantasy": "high fantasy digital art, ethereal lighting, magical atmosphere, intricate details, masterpiece, epic scale",
-        "anime": "digital anime style, high quality cel shaded, sharp lines, vibrant colors, detailed background, Makoto Shinkai aesthetic, high resolution, 2D illustration",
-        "oil": "classical oil painting, visible thick brushstrokes, canvas texture, rich colors, museum quality masterpiece"
+        "photorealistic": "RAW photo, 8k uhd, dslr, soft lighting, high quality, film grain, Fujifilm XT4",
+        "cyberpunk": "cyberpunk style, futuristic city, neon glow, blue and magenta lighting, high contrast, synthwave art",
+        "fantasy": "fantasy art, dnd character style, intricate armor, magical glow, epic background, cinematic atmosphere",
+        "anime": "official anime style, high quality 2D, cel shaded, flat colors, clean lineart, Makoto Shinkai style, high resolution anime, trending on pixiv",
+        "oil": "oil on canvas, heavy impasto, visible brushstrokes, classic art style, textured painting"
     }
 
-    style_mod = styles.get(data.style, "")
+    style_prefix = styles.get(data.style, "")
     
-    # Costruzione del prompt finale
-    final_prompt = f"{style_mod}, {data.prompt}" if style_mod else data.prompt
+    # Costruzione del prompt: lo stile viene messo PRIMA del prompt utente per dominare il risultato
+    final_prompt = f"{style_prefix}, {data.prompt}" if style_prefix else data.prompt
     
     if data.enhance:
-        final_prompt += ", cinematic lighting, masterpiece, ultra high res, sharp focus, stunning visuals"
+        final_prompt += ", masterpiece, ultra high res, detailed shadows"
 
     current_seed = data.seed if data.seed != -1 else random.randint(0, 999999)
     
     w, h = 1024, 1024
     if data.ratio == "16:9": w, h = 1280, 720
-    elif data.ratio == "9:16": h, w = 1280, 720
+    elif data.ratio == "9:16": w, h = 720, 1280
 
-    # Negative Prompt predefinito per evitare stili "pittorici" quando si sceglie Anime
-    neg_base = "low quality, blurry, distorted"
+    # NEGATIVE PROMPT AGGRESSIVO per lo stile Anime
+    neg_base = "low quality, blurry, photo, 3d, realism, realistic, rendering, gradient background, oil painting, watercolor"
+    
+    # Se è anime, aggiungiamo divieto assoluto di acquerello e texture
     if data.style == "anime":
-        neg_base += ", realistic, 3d, oil painting, watercolor, sketchy, messy lines"
+        neg_base += ", canvas texture, brush strokes, rough sketch, painterly, traditional media"
     
     full_neg = f"{neg_base}, {data.negative_prompt}" if data.negative_prompt else neg_base
 
     encoded_prompt = requests.utils.quote(final_prompt)
     encoded_neg = requests.utils.quote(full_neg)
     
+    # URL di Pollinations con i parametri corretti
     api_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?seed={current_seed}&width={w}&height={h}&nologo=true&negative={encoded_neg}"
     
     try:
