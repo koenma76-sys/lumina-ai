@@ -19,18 +19,19 @@
         .lumina-btn { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); transition: all 0.3s ease; }
         .lumina-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4); }
         
-        /* FIX VISIBILITÀ BANNER */
         .ad-container {
             position: relative;
-            z-index: 10; /* Forza il banner sopra lo sfondo */
-            margin-top: 2rem;
+            z-index: 10;
+            margin-top: 1.5rem;
             width: 100%;
             height: 250px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 0, 0, 0.2); /* Bordo di test visibile */
             border-radius: 24px;
+            transition: all 0.5s ease;
+            overflow: hidden;
         }
 
         .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #fbbf24; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; }
@@ -106,7 +107,7 @@
             <div>
                 <div class="flex items-center gap-3">
                     <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase">LUMINA VISUALS</h1>
-                    <span class="text-[10px] font-black text-white/30 tracking-widest uppercase mt-2">BETA</span>
+                    <span class="text-[10px] font-black text-white/20 tracking-widest uppercase mt-2">BETA</span>
                 </div>
                 <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em] mt-1">Vivid Visions Crafted</p>
             </div>
@@ -115,8 +116,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
-            <div class="flex flex-col h-full">
-                
+            <div class="flex flex-col">
                 <div class="glass p-8 rounded-3xl space-y-6 border-white/5">
                     <div class="space-y-2">
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prompt</label>
@@ -148,10 +148,12 @@
                     <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Genera Visione</button>
                 </div>
 
-                <div class="ad-container glass">
-                    <div class="text-center">
-                        <div class="text-[8px] font-black text-white/10 tracking-[0.5em] mb-4 uppercase">Ad Space</div>
-                        <div class="text-[10px] font-bold text-white/30 uppercase tracking-widest">Promoted Content</div>
+                <div id="ad-banner" class="ad-container glass">
+                    <span id="ad-label" class="text-[8px] font-black text-white/5 tracking-[0.5em] mb-4 uppercase transition-opacity duration-500">Sponsor Area</span>
+                    <div class="w-12 h-px bg-white/10 mb-6"></div>
+                    <div id="ad-content" class="transition-all duration-500 opacity-100 transform translate-y-0">
+                        <span id="ad-title" class="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] block">Spazio Pubblicitario</span>
+                        <span id="ad-sub" class="text-[9px] text-white/10 mt-1 italic tracking-widest block">300 x 250</span>
                     </div>
                 </div>
             </div>
@@ -192,6 +194,42 @@
         let lastSeed = -1;
         let deleteTargetIdx = -1;
 
+        // --- LOGICA BANNER INTELLIGENTE ---
+        const ads = [
+            { title: "NVIDIA RTX 5090", sub: "Potenza AI estrema" },
+            { title: "ADOBE CREATIVE CLOUD", sub: "Libera la tua fantasia" },
+            { title: "DIGITAL OCEAN", sub: "Cloud Hosting per AI" },
+            { title: "LUMINA PRO", sub: "Rimuovi la pubblicità" }
+        ];
+        let currentAd = 0;
+        let lastActivity = Date.now();
+
+        function rotateAd() {
+            // Soluzione 3: Non ruotare se l'utente è inattivo da più di 5 minuti
+            if (Date.now() - lastActivity > 300000) return;
+
+            const content = document.getElementById('ad-content');
+            content.style.opacity = '0';
+            content.style.transform = 'translateY(10px)';
+
+            setTimeout(() => {
+                currentAd = (currentAd + 1) % ads.length;
+                document.getElementById('ad-title').innerText = ads[currentAd].title;
+                document.getElementById('ad-sub').innerText = ads[currentAd].sub;
+                content.style.opacity = '1';
+                content.style.transform = 'translateY(0)';
+            }, 500);
+        }
+
+        // Soluzione 2: Timer ogni 60 secondi
+        setInterval(rotateAd, 60000);
+
+        // Monitoraggio attività per la pausa
+        window.addEventListener('mousemove', () => lastActivity = Date.now());
+        window.addEventListener('keydown', () => lastActivity = Date.now());
+
+        // --- FINE LOGICA BANNER ---
+
         document.getElementById('dl-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             const m = document.getElementById('dl-menu');
@@ -217,6 +255,10 @@
         async function processAndGenerate(seedToUse = -1) {
             const promptVal = document.getElementById('prompt').value;
             if(!promptVal) return;
+
+            // Soluzione 1: Ruota il banner al click del tasto genera
+            rotateAd();
+
             const currentParams = {
                 prompt: promptVal, negative_prompt: document.getElementById('negative').value,
                 style: document.getElementById('style').value, ratio: document.getElementById('ratio').value,
