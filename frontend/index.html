@@ -15,25 +15,12 @@
         }
         textarea, input { user-select: text; }
 
+        /* Stile condiviso per tutti i pannelli */
         .glass { background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(16px); }
+        
         .lumina-btn { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); transition: all 0.3s ease; }
         .lumina-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4); }
         
-        /* BANNER PUBBLICITARIO - RESO MOLTO PIÙ VISIBILE */
-        .ad-placeholder {
-            background: rgba(251, 191, 36, 0.03); /* Un tocco di giallo scuro */
-            border: 1px solid rgba(251, 191, 36, 0.2); /* Bordo dorato semi-trasparente */
-            border-radius: 24px;
-            height: 250px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-top: 24px;
-            text-align: center;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-        }
-
         .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #fbbf24; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -104,10 +91,10 @@
 
     <div class="max-w-6xl mx-auto space-y-8">
         <header class="flex justify-between items-end border-b border-white/5 pb-6">
-            <div style="padding-right: 40px;">
-                <div class="flex items-center gap-4">
+            <div>
+                <div class="flex items-center gap-3">
                     <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase leading-none">LUMINA VISUALS</h1>
-                    <span class="text-[10px] font-black text-white/30 border border-white/10 px-2 py-1 rounded tracking-[0.2em] uppercase">BETA</span>
+                    <span class="text-[10px] font-black text-white/20 tracking-widest uppercase mt-2">beta</span>
                 </div>
                 <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em] mt-2">Vivid Visions Crafted</p>
             </div>
@@ -115,8 +102,8 @@
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="flex flex-col">
-                <div class="glass p-8 rounded-3xl space-y-6 border-white/5 h-fit">
+            <div class="flex flex-col gap-6">
+                <div class="glass p-8 rounded-3xl space-y-6">
                     <div class="space-y-2">
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prompt</label>
                         <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm" rows="4"></textarea>
@@ -147,15 +134,16 @@
                     <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Genera Visione</button>
                 </div>
 
-                <div class="ad-placeholder">
-                    <div class="bg-yellow-500/10 text-yellow-500 text-[8px] font-black px-3 py-1 rounded-full tracking-[0.3em] mb-4">AD SPACE</div>
-                    <span class="text-[11px] text-white/20 font-bold uppercase tracking-widest">Partner Promotion</span>
-                    <span class="text-[9px] text-white/10 mt-1 italic">300 x 250 pixels</span>
+                <div class="glass p-6 rounded-3xl h-[250px] flex flex-col items-center justify-center text-center">
+                    <span class="text-[8px] font-black text-white/10 tracking-[0.4em] uppercase mb-4">Advertisement</span>
+                    <div class="w-full h-px bg-white/5 mb-4"></div>
+                    <span class="text-[10px] font-bold text-white/20 uppercase tracking-widest">Spazio Pubblicitario</span>
+                    <span class="text-[9px] text-white/10 mt-1">300 x 250</span>
                 </div>
             </div>
 
             <div class="lg:col-span-2 space-y-8">
-                <div id="preview-area" class="glass min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden border-white/5">
+                <div id="preview-area" class="glass min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden">
                     <div id="loader" class="hidden flex flex-col items-center gap-4">
                         <div class="loader"></div>
                         <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Generazione in corso...</p>
@@ -165,7 +153,7 @@
                     <button id="var-btn" onclick="generateVariation()" class="hidden absolute bottom-6 right-6 bg-black/40 backdrop-blur-xl px-6 py-3 rounded-full text-[10px] font-black uppercase border border-white/10 hover:bg-yellow-500 hover:text-black transition-all">Variazione</button>
                 </div>
 
-                <div class="glass p-6 rounded-3xl space-y-4 border-white/5">
+                <div class="glass p-6 rounded-3xl space-y-4">
                     <div class="flex justify-between items-center border-b border-white/5 pb-3">
                         <h2 class="text-[10px] font-black uppercase tracking-widest text-yellow-500">Session Gallery</h2>
                         <div class="flex gap-3">
