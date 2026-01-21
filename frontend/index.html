@@ -19,10 +19,25 @@
         .lumina-btn { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); transition: all 0.3s ease; }
         .lumina-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4); }
         
+        /* AD SLOT STYLING */
+        .ad-slot {
+            background: rgba(255,255,255,0.02);
+            border: 1px dashed rgba(255,255,255,0.1);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.2);
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 1.5rem;
+        }
+
         .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #fbbf24; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Galleria */
         .gallery-container-rel { position: relative; display: flex; align-items: center; width: 100%; }
         .gallery-wrapper { display: flex; overflow-x: auto; gap: 1rem; padding: 10px 0; scrollbar-width: none; scroll-behavior: smooth; width: 100%; }
         .gallery-wrapper::-webkit-scrollbar { display: none; }
@@ -34,10 +49,6 @@
         .gallery-container-rel:hover .scroll-arrow { opacity: 1; pointer-events: auto; }
         .arrow-left-g { left: -16px; } .arrow-right-g { right: -16px; }
 
-        .del-mini { position: absolute; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.95); color: white; width: 24px; height: 24px; border-radius: 6px; display: none; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; z-index: 10; }
-        .gallery-item-container:hover .del-mini { display: flex; }
-
-        /* MODALS */
         #modal { display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(20px); background: rgba(0,0,0,0.8); }
         #confirm-modal { display: none; position: fixed; inset: 0; z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(10px); background: rgba(0,0,0,0.85); }
         
@@ -105,35 +116,41 @@
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="glass p-8 rounded-3xl space-y-6 border-white/5 h-fit">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prompt</label>
-                    <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm" rows="4"></textarea>
+            <div class="flex flex-col gap-4">
+                <div class="glass p-8 rounded-3xl space-y-6 border-white/5 h-fit">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prompt</label>
+                        <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm" rows="4"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-red-500/40 uppercase tracking-widest">Esclusioni</label>
+                        <textarea id="negative" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-3 text-white text-xs" rows="2"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <select id="style" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
+                            <option value="none">Nessuno</option>
+                            <option value="photorealistic">Fotorealismo</option>
+                            <option value="cyberpunk">Cyberpunk</option>
+                            <option value="fantasy">Epic Fantasy</option>
+                            <option value="anime">Anime Style</option>
+                            <option value="oil">Olio su Tela</option>
+                        </select>
+                        <select id="ratio" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
+                            <option value="1:1">1:1</option>
+                            <option value="16:9">16:9</option>
+                            <option value="9:16">9:16</option>
+                        </select>
+                    </div>
+                    <label class="flex items-center gap-3 cursor-pointer p-3 rounded-2xl bg-white/5 border border-white/5">
+                        <input type="checkbox" id="enhance" class="w-4 h-4 accent-yellow-500">
+                        <span class="text-[10px] font-bold text-slate-300 uppercase">Vivid Mode</span>
+                    </label>
+                    <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Genera Visione</button>
                 </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-red-500/40 uppercase tracking-widest">Esclusioni</label>
-                    <textarea id="negative" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-3 text-white text-xs" rows="2"></textarea>
+
+                <div class="ad-slot w-full h-[250px]">
+                    Area Pubblicitaria (300x250)
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <select id="style" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
-                        <option value="none">Nessuno</option>
-                        <option value="photorealistic">Fotorealismo</option>
-                        <option value="cyberpunk">Cyberpunk</option>
-                        <option value="fantasy">Epic Fantasy</option>
-                        <option value="anime">Anime Style</option>
-                        <option value="oil">Olio su Tela</option>
-                    </select>
-                    <select id="ratio" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
-                        <option value="1:1">1:1</option>
-                        <option value="16:9">16:9</option>
-                        <option value="9:16">9:16</option>
-                    </select>
-                </div>
-                <label class="flex items-center gap-3 cursor-pointer p-3 rounded-2xl bg-white/5 border border-white/5">
-                    <input type="checkbox" id="enhance" class="w-4 h-4 accent-yellow-500">
-                    <span class="text-[10px] font-bold text-slate-300 uppercase">Vivid Mode</span>
-                </label>
-                <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Genera Visione</button>
             </div>
 
             <div class="lg:col-span-2 space-y-8">
@@ -234,7 +251,6 @@
                 cont.className = 'gallery-item-container';
                 cont.innerHTML = `
                     <img src="${item.url}" class="gallery-item" onclick="openModal(${index})">
-                    <div class="del-mini" onclick="askDelete(event, ${index})">✕</div>
                 `;
                 g.appendChild(cont);
             });
@@ -255,8 +271,7 @@
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
         function nextImg() { openModal(currentIdx + 1); }
         function prevImg() { openModal(currentIdx - 1); }
-        function askDelete(e, idx) { if(e) e.stopPropagation(); deleteTargetIdx = idx; document.getElementById('confirm-modal').style.display = 'flex'; }
-        function askDeleteCurrent() { if(currentIdx !== -1) askDelete(null, currentIdx); }
+        function askDeleteCurrent() { if(currentIdx !== -1) { deleteTargetIdx = currentIdx; document.getElementById('confirm-modal').style.display = 'flex'; } }
         function closeConfirm() { document.getElementById('confirm-modal').style.display = 'none'; }
         
         document.getElementById('confirm-yes').onclick = () => {
