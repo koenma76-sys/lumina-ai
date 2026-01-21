@@ -33,42 +33,56 @@ async def health_check():
 
 @app.post("/generate")
 async def generate(data: GenRequest):
-    # STILI OTTIMIZZATI CON PAROLE CHIAVE "PESANTI"
-    styles = {
-        "photorealistic": "RAW photo, 8k uhd, dslr, soft lighting, high quality, film grain, Fujifilm XT4",
-        "cyberpunk": "cyberpunk style, futuristic city, neon glow, blue and magenta lighting, high contrast, synthwave art",
-        "fantasy": "fantasy art, dnd character style, intricate armor, magical glow, epic background, cinematic atmosphere",
-        "anime": "official anime style, high quality 2D, cel shaded, flat colors, clean lineart, Makoto Shinkai style, high resolution anime, trending on pixiv",
-        "oil": "oil on canvas, heavy impasto, visible brushstrokes, classic art style, textured painting"
+    # DIZIONARIO STILI: Configurazione 'Hard' per forzare il look desiderato
+    style_configs = {
+        "photorealistic": {
+            "prefix": "Ultra-realistic professional photography, shot on 35mm lens, f/1.8, depth of field, sharp focus, incredibly detailed skin pores, RAW cinematic photo,",
+            "negative": "painting, drawing, illustration, glitch, deformed, cartoon, anime, art, sketch, oil painting, watercolor"
+        },
+        "cyberpunk": {
+            "prefix": "Cyberpunk 2077 aesthetic, futuristic sci-fi digital art, neon city lights, high-tech atmosphere, cinematic lighting, sharp details, hyper-detailed,",
+            "negative": "classic, nature, rural, sunlight, bright day, vintage, old, traditional art, painting"
+        },
+        "fantasy": {
+            "prefix": "Epic fantasy digital illustration, concept art, magical atmosphere, intricate details, glowing elements, masterpiece, sharp focus,",
+            "negative": "modern, car, technology, blurry, low res, real life, photography, mundane"
+        },
+        "anime": {
+            "prefix": "Official anime style, high quality 2D, cel shaded, flat colors, clean lineart, Makoto Shinkai style, high resolution anime, trending on pixiv,",
+            "negative": "realistic, 3d, rendering, photo, realistic skin, oil painting, watercolor, rough sketch, traditional media"
+        },
+        "oil": {
+            "prefix": "Traditional oil painting on canvas, heavy impasto brushstrokes, rich textures, museum quality masterpiece, classical lighting,",
+            "negative": "photography, clean, digital art, flat colors, anime, 3d render, vector, plastic"
+        }
     }
 
-    style_prefix = styles.get(data.style, "")
+    # Recupero configurazione o uso default
+    config = style_configs.get(data.style, {"prefix": "", "negative": ""})
     
-    # Costruzione del prompt: lo stile viene messo PRIMA del prompt utente per dominare il risultato
-    final_prompt = f"{style_prefix}, {data.prompt}" if style_prefix else data.prompt
+    # Costruzione Prompt finale (Prefisso + Prompt Utente)
+    final_prompt = f"{config['prefix']} {data.prompt}" if config['prefix'] else data.prompt
     
     if data.enhance:
-        final_prompt += ", masterpiece, ultra high res, detailed shadows"
+        final_prompt += ", masterpiece, ultra high resolution, highly detailed, perfect composition"
 
     current_seed = data.seed if data.seed != -1 else random.randint(0, 999999)
     
+    # Gestione Ratio
     w, h = 1024, 1024
     if data.ratio == "16:9": w, h = 1280, 720
     elif data.ratio == "9:16": w, h = 720, 1280
 
-    # NEGATIVE PROMPT AGGRESSIVO per lo stile Anime
-    neg_base = "low quality, blurry, photo, 3d, realism, realistic, rendering, gradient background, oil painting, watercolor"
+    # Unione Negative Prompts (Base + Specifico Stile + Utente)
+    base_neg = "low quality, bad anatomy, worst quality, blurry, watermark, text, signature"
+    style_neg = config['negative']
+    user_neg = data.negative_prompt
     
-    # Se è anime, aggiungiamo divieto assoluto di acquerello e texture
-    if data.style == "anime":
-        neg_base += ", canvas texture, brush strokes, rough sketch, painterly, traditional media"
-    
-    full_neg = f"{neg_base}, {data.negative_prompt}" if data.negative_prompt else neg_base
+    full_neg = f"{base_neg}, {style_neg}, {user_neg}"
 
     encoded_prompt = requests.utils.quote(final_prompt)
     encoded_neg = requests.utils.quote(full_neg)
     
-    # URL di Pollinations con i parametri corretti
     api_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?seed={current_seed}&width={w}&height={h}&nologo=true&negative={encoded_neg}"
     
     try:
