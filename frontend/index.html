@@ -8,7 +8,6 @@
     <style>
         body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         
-        /* Rimozione Totale Outline e Selezioni */
         *, *:focus, *:active, *:focus-visible {
             outline: none !important;
             -webkit-tap-highlight-color: transparent !important;
@@ -96,10 +95,11 @@
 
     <div class="max-w-6xl mx-auto space-y-8">
         <header class="flex justify-between items-end border-b border-white/5 pb-6">
-            <div class="pr-4"> <h1 class="text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">LUMINA VISUALS</h1>
+            <div style="padding-right: 25px;">
+                <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase">LUMINA VISUALS</h1>
                 <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em] mt-1">Vivid Visions Crafted</p>
             </div>
-            <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest">In attesa...</div>
+            <div id="server-status" class="px-4 py-2 bg-slate-800 rounded-full text-[10px] font-bold uppercase tracking-widest text-slate-500 border border-white/5 transition-all">In attesa...</div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -160,7 +160,6 @@
     </div>
 
     <script>
-        // SOSTITUISCI CON L'URL DI RENDER (es. https://lumina-backend.onrender.com)
         const API_URL = "https://lumina-visuals-backend.onrender.com"; 
         
         let fullHistory = []; 
@@ -168,7 +167,6 @@
         let lastSeed = -1;
         let deleteTargetIdx = -1;
 
-        // Toggle Download Menu
         document.getElementById('dl-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             const m = document.getElementById('dl-menu');
@@ -178,18 +176,20 @@
         window.onclick = () => { document.getElementById('dl-menu').style.display = 'none'; };
 
         async function checkServer() {
+            const s = document.getElementById('server-status');
             try {
                 const r = await fetch(API_URL + "/");
-                const s = document.getElementById('server-status');
                 if(r.ok) {
                     s.innerText = "Online";
                     s.className = "px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 text-[10px] font-bold uppercase tracking-widest";
                 }
             } catch(e) {
-                console.log("Server in standby...");
+                console.error("Connessione API Fallita:", e);
+                s.innerText = "Offline/Wakeup";
             }
         }
         checkServer();
+        setInterval(checkServer, 15000);
 
         async function processAndGenerate(seedToUse = -1) {
             const promptVal = document.getElementById('prompt').value;
@@ -218,7 +218,7 @@
                 document.getElementById('var-btn').classList.remove('hidden');
                 fullHistory.unshift({ ...currentParams, url, seed: d.seed, hex: d.image });
                 renderGallery();
-            } catch(e) { alert("Connessione fallita. Il server potrebbe essere in risveglio (attendi 30s)."); }
+            } catch(e) { alert("Errore di connessione. Riprova tra poco."); }
             finally { document.getElementById('loader').classList.add('hidden'); }
         }
 
