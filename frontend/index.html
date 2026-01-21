@@ -30,7 +30,7 @@
         .help-badge {
             background: #1e293b;
             color: #f8fafc;
-            padding: 8px 14px;
+            padding: 6px 14px;
             border-radius: 12px;
             font-size: 10px;
             font-weight: 800;
@@ -57,16 +57,9 @@
         }
         .gallery-wrapper::-webkit-scrollbar { display: none; }
         .gallery-item { width: 140px; height: 90px; object-fit: cover; border-radius: 12px; cursor: pointer; flex: 0 0 auto; transition: 0.2s; border: 2px solid transparent; }
+        .gallery-item:hover { border-color: #fbbf24; }
 
-        /* Mobile specific adjustments */
-        @media (max-width: 1024px) {
-            .main-container { display: flex; flex-direction: column; gap: 1.5rem; }
-            .order-input { order: 1; }
-            .order-preview { order: 2; }
-            .order-support { order: 3; }
-            h1 { font-size: 2.5rem !important; }
-        }
-
+        /* MODALS */
         #modal, #welcome-modal, #help-modal, #confirm-modal { 
             position: fixed; inset: 0; z-index: 500; display: none; 
             align-items: center; justify-content: center; backdrop-filter: blur(20px); background: rgba(0,0,0,0.9);
@@ -80,6 +73,15 @@
             border: 1px solid rgba(251, 191, 36, 0.1);
             background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), rgba(2, 6, 23, 0.9));
         }
+
+        /* Responsive Logic */
+        @media (max-width: 1024px) {
+            .main-grid { display: flex; flex-direction: column; }
+            .mobile-order-1 { order: 1; }
+            .mobile-order-2 { order: 2; }
+            .mobile-order-3 { order: 3; }
+            h1 { font-size: 2.5rem !important; }
+        }
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen">
@@ -90,35 +92,42 @@
                 <div class="text-yellow-500 font-black text-xs uppercase tracking-[0.3em]">Welcome to</div>
                 <h2 class="text-3xl font-black text-white tracking-tighter uppercase italic">Lumina Visuals</h2>
             </div>
-            <div class="space-y-4 text-slate-300 text-sm leading-relaxed text-center">
-                <p>Studio professionale per la generazione di immagini AI.</p>
-                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2 text-left">
+            <div class="space-y-4 text-slate-300 text-sm leading-relaxed">
+                <p>Lumina Visuals is an AI-powered creative studio designed to turn your text descriptions into high-quality images in seconds.</p>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
                     <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Model & API</p>
-                    <p class="text-xs">Powered by <strong>Flux.1 Schnell</strong> via <strong>Pollinations.ai</strong>. Servizio gratuito soggetto a carico server.</p>
+                    <p class="text-xs">Leveraging <strong>Flux.1 Schnell</strong> via <strong>Pollinations.ai</strong> API for free professional-grade generation.</p>
+                </div>
+                <div class="bg-red-500/5 p-4 rounded-2xl border border-red-500/10 space-y-2">
+                    <p class="text-[10px] font-black uppercase text-red-500 tracking-widest">Beta & Limits</p>
+                    <p class="text-xs italic text-slate-400">Performance depends on API load. Slower times may occur during peak hours.</p>
                 </div>
             </div>
-            <button onclick="closeWelcome()" class="lumina-btn w-full text-black font-black py-4 rounded-2xl uppercase text-[11px] tracking-widest">Accedi allo Studio</button>
-            <label class="flex items-center justify-center gap-2 cursor-pointer opacity-50">
-                <input type="checkbox" id="dont-show-welcome" class="accent-yellow-500">
-                <span class="text-[10px] font-bold uppercase text-slate-400">Non mostrare più</span>
-            </label>
+            <div class="flex flex-col gap-4">
+                <button onclick="closeWelcome()" class="lumina-btn w-full text-black font-black py-4 rounded-2xl uppercase text-[11px] tracking-widest">Enter Studio</button>
+                <label class="flex items-center justify-center gap-2 cursor-pointer opacity-50">
+                    <input type="checkbox" id="dont-show-welcome" class="accent-yellow-500">
+                    <span class="text-[10px] font-bold uppercase tracking-tighter text-slate-400">Don't show again</span>
+                </label>
+            </div>
         </div>
     </div>
 
     <div id="help-modal" onclick="closeHelp()">
         <div class="glass p-8 rounded-[2.5rem] border-white/10 max-w-lg w-full mx-4 space-y-6 shadow-2xl" onclick="event.stopPropagation()">
-            <h3 class="text-xl font-black uppercase text-yellow-500">Guida Rapida</h3>
+            <h3 class="text-xl font-black uppercase text-yellow-500">Guide</h3>
             <div class="space-y-4 text-sm text-slate-300">
-                <p>• <strong>Prompt:</strong> Descrivi l'immagine (in inglese).</p>
-                <p>• <strong>Vivid:</strong> Aumenta contrasto e saturazione.</p>
-                <p>• <strong>Restore:</strong> Clicca un'immagine in galleria e premi Restore per recuperare i suoi parametri.</p>
+                <p>1. <strong>Prompt:</strong> Describe your vision in English.</p>
+                <p>2. <strong>Style:</strong> Choose an artistic preset.</p>
+                <p>3. <strong>Vivid Mode:</strong> Enhances colors and contrast.</p>
+                <p>4. <strong>Restore:</strong> Click a gallery image to reload its settings.</p>
             </div>
-            <button onclick="closeHelp()" class="w-full bg-yellow-500 text-black py-4 rounded-xl font-black uppercase text-[10px]">Chiudi</button>
+            <button onclick="closeHelp()" class="w-full bg-yellow-500 text-black py-4 rounded-xl font-black uppercase text-[10px]">Close</button>
         </div>
     </div>
 
     <div class="max-w-6xl mx-auto space-y-8">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/5 pb-6 gap-4">
+        <header class="flex justify-between items-end border-b border-white/5 pb-6">
             <div>
                 <div class="flex items-center gap-3">
                     <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase italic">LUMINA VISUALS</h1>
@@ -135,32 +144,33 @@
             <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest">Waiting...</div>
         </header>
 
-        <div class="main-container lg:grid lg:grid-cols-3 lg:gap-8">
+        <div class="main-grid grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <div class="order-input flex flex-col gap-6">
-                <div class="glass p-6 md:p-8 rounded-[2rem] space-y-6 border-white/5">
+            <div class="mobile-order-1 flex flex-col gap-6">
+                <div class="glass p-8 rounded-[2rem] space-y-6 border-white/5">
                     <div class="space-y-2">
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prompt</label>
-                        <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm focus:border-yellow-500/50 transition-all" rows="3" placeholder="Describe your vision..."></textarea>
+                        <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm focus:border-yellow-500/50 transition-all" rows="4" placeholder="Enter your vision..."></textarea>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4">
                         <select id="style" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
-                            <option value="none">None Style</option>
+                            <option value="none">None</option>
                             <option value="photorealistic">Photorealistic</option>
                             <option value="cyberpunk">Cyberpunk</option>
                             <option value="fantasy">Fantasy</option>
+                            <option value="anime">Anime</option>
                         </select>
                         <select id="ratio" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
-                            <option value="1:1">1:1 Square</option>
-                            <option value="16:9">16:9 Wide</option>
-                            <option value="9:16">9:16 Story</option>
+                            <option value="1:1">1:1</option>
+                            <option value="16:9">16:9</option>
+                            <option value="9:16">9:16</option>
                         </select>
                     </div>
 
                     <div class="space-y-4 border-t border-white/5 pt-4">
                         <label class="text-[10px] font-bold text-red-500/40 uppercase tracking-widest">Negative Prompt</label>
-                        <textarea id="negative" class="w-full bg-slate-950/50 border border-white/10 rounded-xl p-3 text-white text-xs" rows="1" placeholder="Exclude: blur, text..."></textarea>
+                        <textarea id="negative" class="w-full bg-slate-950/50 border border-white/10 rounded-xl p-3 text-white text-xs" rows="2" placeholder="Exclude elements..."></textarea>
                         
                         <label class="flex items-center gap-3 cursor-pointer p-3 rounded-2xl bg-white/5 border border-white/5">
                             <input type="checkbox" id="enhance" class="w-4 h-4 accent-yellow-500">
@@ -168,41 +178,41 @@
                         </label>
                     </div>
 
-                    <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-4 rounded-2xl uppercase text-sm tracking-widest shadow-xl">Generate Vision</button>
+                    <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest shadow-xl">Generate Vision</button>
                 </div>
 
-                <div class="order-support support-container hidden lg:block">
-                    <p class="text-[10px] text-slate-400 font-medium mb-4 uppercase tracking-widest">Support the project</p>
+                <div class="support-container hidden lg:block">
+                    <p class="text-[10px] text-slate-400 font-medium mb-4 uppercase tracking-widest">Support Lumina</p>
                     <a href="https://ko-fi.com/luminaai" target="_blank" class="bg-white/5 border border-white/10 px-6 py-3 rounded-xl inline-flex items-center gap-2 text-[10px] font-black uppercase hover:bg-[#29abe0] transition-all">
                         <span>💙</span> Ko-fi
                     </a>
                 </div>
             </div>
 
-            <div class="order-preview lg:col-span-2 space-y-6">
-                <div id="preview-area" class="glass min-h-[350px] md:min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-4 relative overflow-hidden border-white/5">
+            <div class="mobile-order-2 lg:col-span-2 space-y-8">
+                <div id="preview-area" class="glass min-h-[400px] lg:min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden border-white/5">
                     <div id="loader" class="hidden flex flex-col items-center gap-4">
                         <div class="loader"></div>
                         <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">generazione in corso...</p>
                     </div>
                     <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl max-h-[500px] rounded-2xl cursor-zoom-in object-contain w-full">
-                    <div id="ph" class="text-6xl md:text-8xl font-black italic opacity-5 uppercase select-none">Lumina</div>
-                    <button id="var-btn" onclick="generateVariation()" class="hidden absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-5 py-2 rounded-full text-[10px] font-black uppercase border border-white/10">Variation</button>
+                    <div id="ph" class="text-8xl font-black italic opacity-5 uppercase select-none">Lumina</div>
+                    <button id="var-btn" onclick="generateVariation()" class="hidden absolute bottom-6 right-6 bg-black/40 backdrop-blur-xl px-6 py-3 rounded-full text-[10px] font-black uppercase border border-white/10">Variation</button>
                 </div>
 
-                <div class="glass p-5 rounded-3xl space-y-4 border-white/5">
+                <div class="glass p-6 rounded-3xl space-y-4 border-white/5">
                     <div class="flex justify-between items-center border-b border-white/5 pb-3">
                         <h2 class="text-[10px] font-black uppercase tracking-widest text-yellow-500">History</h2>
-                        <div class="flex gap-2">
-                            <button onclick="downloadZip()" class="text-[9px] font-bold bg-white/5 px-3 py-1.5 rounded-full border border-white/10 uppercase">ZIP</button>
-                            <button onclick="clearG()" class="text-[9px] font-bold text-red-500/50 px-3 py-1.5 rounded-full uppercase">Reset</button>
+                        <div class="flex gap-3">
+                            <button onclick="downloadZip()" class="text-[9px] font-bold bg-white/5 px-4 py-2 rounded-full border border-white/10 uppercase">Export ZIP</button>
+                            <button onclick="clearG()" class="text-[9px] font-bold text-red-500/50 px-4 py-2 rounded-full uppercase">Reset</button>
                         </div>
                     </div>
                     <div id="gallery" class="gallery-wrapper"></div>
                 </div>
 
-                <div class="order-support support-container lg:hidden">
-                    <p class="text-[10px] text-slate-400 font-medium mb-4 uppercase tracking-widest">Support the project</p>
+                <div class="support-container lg:hidden mobile-order-3">
+                    <p class="text-[10px] text-slate-400 font-medium mb-4 uppercase tracking-widest">Support Lumina</p>
                     <a href="https://ko-fi.com/luminaai" target="_blank" class="bg-white/5 border border-white/10 px-6 py-3 rounded-xl inline-flex items-center gap-2 text-[10px] font-black uppercase">
                         <span>💙</span> Ko-fi
                     </a>
@@ -214,11 +224,10 @@
     <div id="modal" onclick="closeModal()">
         <div class="close-circle" onclick="closeModal()">✕</div>
         <div class="flex flex-col items-center gap-6 p-4 w-full">
-            <img id="modal-img" class="max-h-[70vh] rounded-xl shadow-2xl object-contain" src="">
-            <div class="flex flex-wrap justify-center gap-3">
-                <button id="modal-restore-btn" class="bg-yellow-500 text-black px-6 py-3 rounded-full font-black uppercase text-[10px]">Restore</button>
-                <button onclick="downloadFormat('png')" class="bg-white/10 text-white px-6 py-3 rounded-full font-black uppercase text-[10px] border border-white/10">PNG</button>
-                <button onclick="askDeleteCurrent()" class="bg-red-500/10 text-red-500 px-6 py-3 rounded-full font-black uppercase text-[10px] border border-red-500/20">Delete</button>
+            <img id="modal-img" class="max-h-[75vh] rounded-xl shadow-2xl object-contain" src="">
+            <div class="flex gap-4">
+                <button id="modal-restore-btn" class="bg-yellow-500 text-black px-8 py-3 rounded-full font-black uppercase text-[10px]">Restore</button>
+                <button onclick="downloadFormat('png')" class="bg-white/10 text-white px-8 py-3 rounded-full font-black uppercase text-[10px] border border-white/10">PNG</button>
             </div>
         </div>
     </div>
@@ -292,7 +301,7 @@
                 
                 fullHistory.unshift({ ...params, url, seed: d.seed, hex: d.image });
                 renderGallery();
-            } catch(e) { alert("Server Error."); }
+            } catch(e) { alert("Error."); }
             finally { document.getElementById('loader').classList.add('hidden'); }
         }
 
@@ -345,8 +354,7 @@
             a.download = "Lumina_Session.zip"; a.click();
         }
 
-        function clearG() { if(confirm("Clear history?")) { fullHistory = []; renderGallery(); } }
-
+        function clearG() { if(confirm("Clear?")) { fullHistory = []; renderGallery(); } }
         function downloadFormat(ext) {
             const item = fullHistory[currentIdx];
             const a = document.createElement('a');
