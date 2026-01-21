@@ -219,13 +219,13 @@
     </div>
 
     <div class="max-w-6xl mx-auto space-y-8">
-        <header class="flex justify-between items-end border-b border-white/5 pb-6">
-            <div>
+        <header class="flex justify-between items-center border-b border-white/5 pb-6">
+            <div class="flex flex-col">
                 <div class="flex items-center gap-3">
-                    <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase">LUMINA VISUALS</h1>
+                    <h1 class="text-3xl md:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase">LUMINA VISUALS</h1>
                     <span class="text-[10px] font-black text-white/20 tracking-widest uppercase mt-2">BETA</span>
                 </div>
-                <div class="flex items-center gap-4 mt-2">
+                <div class="flex flex-wrap items-center gap-4 mt-2">
                     <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em]">Vivid Visions Crafted</p>
                     <div class="flex gap-2 border-l border-white/10 pl-4">
                         <button onclick="openHelp()" class="help-badge">
@@ -239,7 +239,7 @@
                     </div>
                 </div>
             </div>
-            <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest">Waiting...</div>
+            <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">Waiting...</div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -364,7 +364,7 @@
                 if(r.ok) {
                     const s = document.getElementById('server-status');
                     s.innerText = "Online";
-                    s.className = "px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 text-[10px] font-bold uppercase tracking-widest";
+                    s.className = "px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap";
                 }
             } catch(e) {}
         }
