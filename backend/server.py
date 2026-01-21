@@ -33,19 +33,19 @@ async def health_check():
 
 @app.post("/generate")
 async def generate(data: GenRequest):
-    # DIZIONARIO STILI: Configurazione 'Hard' per forzare il look desiderato
+    # STILI RIFINITI PER EVITARE L'EFFETTO "DIPINTO/ACQUERELLO"
     style_configs = {
         "photorealistic": {
-            "prefix": "Ultra-realistic professional photography, shot on 35mm lens, f/1.8, depth of field, sharp focus, incredibly detailed skin pores, RAW cinematic photo,",
-            "negative": "painting, drawing, illustration, glitch, deformed, cartoon, anime, art, sketch, oil painting, watercolor"
+            "prefix": "Photorealistic cinematic shot, high detail, 8k, f/1.8, high skin detail, detailed eyes, masterwork photography, sharp focus,",
+            "negative": "painting, oil, watercolor, sketch, drawing, illustration, cartoon, anime, CGI, 3d render, doll, plastic"
         },
         "cyberpunk": {
-            "prefix": "Cyberpunk 2077 aesthetic, futuristic sci-fi digital art, neon city lights, high-tech atmosphere, cinematic lighting, sharp details, hyper-detailed,",
-            "negative": "classic, nature, rural, sunlight, bright day, vintage, old, traditional art, painting"
+            "prefix": "Cinematic movie still, cyberpunk setting, realistic neon lighting, volumetric fog, Ray Tracing, Unreal Engine 5 render, hyper-realistic, metallic textures,",
+            "negative": "painting, drawing, art, sketch, illustration, oil, watercolor, canvas, flat colors, cartoon"
         },
         "fantasy": {
-            "prefix": "Epic fantasy digital illustration, concept art, magical atmosphere, intricate details, glowing elements, masterpiece, sharp focus,",
-            "negative": "modern, car, technology, blurry, low res, real life, photography, mundane"
+            "prefix": "Cinematic film still, realistic fantasy setting, natural dramatic lighting, highly detailed textures, movie shot, 8k, hyper-realistic, realistic scale,",
+            "negative": "illustration, painting, digital art, drawing, sketch, cartoon, anime, low poly, oil, watercolor, canvas texture"
         },
         "anime": {
             "prefix": "Official anime style, high quality 2D, cel shaded, flat colors, clean lineart, Makoto Shinkai style, high resolution anime, trending on pixiv,",
@@ -57,24 +57,23 @@ async def generate(data: GenRequest):
         }
     }
 
-    # Recupero configurazione o uso default
     config = style_configs.get(data.style, {"prefix": "", "negative": ""})
     
-    # Costruzione Prompt finale (Prefisso + Prompt Utente)
+    # Prefisso prima del prompt per dominare la generazione
     final_prompt = f"{config['prefix']} {data.prompt}" if config['prefix'] else data.prompt
     
     if data.enhance:
-        final_prompt += ", masterpiece, ultra high resolution, highly detailed, perfect composition"
+        final_prompt += ", cinematic lighting, masterpiece, ultra high resolution, highly detailed"
 
     current_seed = data.seed if data.seed != -1 else random.randint(0, 999999)
     
-    # Gestione Ratio
+    # Ratio logic
     w, h = 1024, 1024
     if data.ratio == "16:9": w, h = 1280, 720
     elif data.ratio == "9:16": w, h = 720, 1280
 
-    # Unione Negative Prompts (Base + Specifico Stile + Utente)
-    base_neg = "low quality, bad anatomy, worst quality, blurry, watermark, text, signature"
+    # Negative Prompt consolidato
+    base_neg = "low quality, blurry, worst quality, distorted, watermark, signature"
     style_neg = config['negative']
     user_neg = data.negative_prompt
     
