@@ -19,20 +19,19 @@
         .lumina-btn { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); transition: all 0.3s ease; }
         .lumina-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4); }
         
-        /* AD SLOT STYLING */
-        .ad-slot {
-            background: rgba(255,255,255,0.02);
-            border: 1px dashed rgba(255,255,255,0.1);
-            border-radius: 1rem;
+        /* BANNER PUBBLICITARIO VISIBILE */
+        .ad-placeholder {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            height: 250px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: rgba(255,255,255,0.2);
-            font-size: 9px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 1.5rem;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.3);
+            text-align: center;
         }
 
         .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #fbbf24; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; }
@@ -106,9 +105,9 @@
     <div class="max-w-6xl mx-auto space-y-8">
         <header class="flex justify-between items-end border-b border-white/5 pb-6">
             <div style="padding-right: 40px;">
-                <div class="flex items-baseline gap-3">
+                <div class="flex items-center gap-3">
                     <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase">LUMINA VISUALS</h1>
-                    <span class="text-[10px] font-black text-white/30 tracking-widest uppercase">Beta</span>
+                    <span class="text-[10px] font-black text-white/30 tracking-[0.2em] uppercase mt-2">BETA</span>
                 </div>
                 <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em] mt-1">Vivid Visions Crafted</p>
             </div>
@@ -116,7 +115,7 @@
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col">
                 <div class="glass p-8 rounded-3xl space-y-6 border-white/5 h-fit">
                     <div class="space-y-2">
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prompt</label>
@@ -148,8 +147,9 @@
                     <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Genera Visione</button>
                 </div>
 
-                <div class="ad-slot w-full h-[250px]">
-                    Area Pubblicitaria (300x250)
+                <div class="ad-placeholder">
+                    <span class="text-[8px] tracking-[0.3em]">SPAZIO PUBBLICITARIO</span>
+                    <span class="text-[10px] mt-2 opacity-50">300 x 250</span>
                 </div>
             </div>
 
@@ -249,9 +249,7 @@
             fullHistory.forEach((item, index) => {
                 const cont = document.createElement('div');
                 cont.className = 'gallery-item-container';
-                cont.innerHTML = `
-                    <img src="${item.url}" class="gallery-item" onclick="openModal(${index})">
-                `;
+                cont.innerHTML = `<img src="${item.url}" class="gallery-item" onclick="openModal(${index})">`;
                 g.appendChild(cont);
             });
         }
