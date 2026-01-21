@@ -11,7 +11,6 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 app = FastAPI()
 
-# Configurazione CORS completa
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -34,31 +33,40 @@ async def health_check():
 
 @app.post("/generate")
 async def generate(data: GenRequest):
+    # STILI OTTIMIZZATI PER COERENZA VISIVA
     styles = {
-        "photorealistic": "professional photography, raw photo, 8k, highly detailed",
-        "cyberpunk": "neon lights, synthwave aesthetic, futuristic city",
-        "fantasy": "ethereal lighting, magical world, highly detailed digital art",
-        "anime": "clean anime style, vibrant colors, studio ghibli inspired",
-        "oil": "oil painting, thick brushstrokes, canvas texture, museum quality"
+        "photorealistic": "ultra-realistic portait, 8k resolution, highly detailed skin texture, cinematic lighting, sharp focus, professional photography",
+        "cyberpunk": "cyberpunk aesthetic, neon city lights, futuristic, synthwave color palette, high contrast, detailed mechanical elements",
+        "fantasy": "high fantasy digital art, ethereal lighting, magical atmosphere, intricate details, masterpiece, epic scale",
+        "anime": "digital anime style, high quality cel shaded, sharp lines, vibrant colors, detailed background, Makoto Shinkai aesthetic, high resolution, 2D illustration",
+        "oil": "classical oil painting, visible thick brushstrokes, canvas texture, rich colors, museum quality masterpiece"
     }
 
     style_mod = styles.get(data.style, "")
+    
+    # Costruzione del prompt finale
     final_prompt = f"{style_mod}, {data.prompt}" if style_mod else data.prompt
     
     if data.enhance:
-        final_prompt += ", cinematic lighting, masterpiece, ultra high res, sharp focus"
+        final_prompt += ", cinematic lighting, masterpiece, ultra high res, sharp focus, stunning visuals"
 
     current_seed = data.seed if data.seed != -1 else random.randint(0, 999999)
     
     w, h = 1024, 1024
     if data.ratio == "16:9": w, h = 1280, 720
-    elif data.ratio == "9:16": w, h = 720, 1280
+    elif data.ratio == "9:16": h, w = 1280, 720
+
+    # Negative Prompt predefinito per evitare stili "pittorici" quando si sceglie Anime
+    neg_base = "low quality, blurry, distorted"
+    if data.style == "anime":
+        neg_base += ", realistic, 3d, oil painting, watercolor, sketchy, messy lines"
+    
+    full_neg = f"{neg_base}, {data.negative_prompt}" if data.negative_prompt else neg_base
 
     encoded_prompt = requests.utils.quote(final_prompt)
-    api_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?seed={current_seed}&width={w}&height={h}&nologo=true"
+    encoded_neg = requests.utils.quote(full_neg)
     
-    if data.negative_prompt:
-        api_url += f"&negative={requests.utils.quote(data.negative_prompt)}"
+    api_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?seed={current_seed}&width={w}&height={h}&nologo=true&negative={encoded_neg}"
     
     try:
         r = requests.get(api_url, timeout=60)
