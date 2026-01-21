@@ -11,10 +11,10 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 app = FastAPI()
 
-# Configurazione CORS per permettere al Frontend (Vercel) di chiamare il Backend (Render)
+# Configurazione CORS completa
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In produzione potrai mettere l'URL del tuo dominio .net
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,7 +30,7 @@ class GenRequest(BaseModel):
 
 @app.get("/")
 async def health_check():
-    return {"status": "online", "message": "Lumina Backend is running on Render"}
+    return {"status": "online", "message": "Lumina Backend is running"}
 
 @app.post("/generate")
 async def generate(data: GenRequest):
@@ -50,18 +50,20 @@ async def generate(data: GenRequest):
 
     current_seed = data.seed if data.seed != -1 else random.randint(0, 999999)
     
-    # Dimensioni in base al rapporto (Ratio)
     w, h = 1024, 1024
     if data.ratio == "16:9": w, h = 1280, 720
     elif data.ratio == "9:16": w, h = 720, 1280
 
-    api_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(final_prompt)}?seed={current_seed}&width={w}&height={h}&nologo=true"
+    encoded_prompt = requests.utils.quote(final_prompt)
+    api_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?seed={current_seed}&width={w}&height={h}&nologo=true"
+    
     if data.negative_prompt:
         api_url += f"&negative={requests.utils.quote(data.negative_prompt)}"
     
     try:
         r = requests.get(api_url, timeout=60)
-        # Invio l'immagine in formato HEX per massima compatibilità
+        if r.status_code != 200:
+            raise HTTPException(status_code=500, detail="Pollinations API error")
         return {"image": r.content.hex(), "seed": current_seed}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -80,6 +82,5 @@ async def make_zip(data: dict):
     return {"zip": base64.b64encode(buf.getvalue()).decode()}
 
 if __name__ == "__main__":
-    # Render assegna la porta automaticamente tramite variabile d'ambiente
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
