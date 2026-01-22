@@ -15,79 +15,348 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        *, *:focus, *:active, *:focus-visible { outline: none !important; -webkit-tap-highlight-color: transparent !important; user-select: none; }
+        
+        *, *:focus, *:active, *:focus-visible {
+            outline: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+            user-select: none;
+        }
         textarea, input { user-select: text; }
+
         .glass { background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(16px); }
         .lumina-btn { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); transition: all 0.3s ease; }
         .lumina-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4); }
-        .help-badge { background: #1e293b; color: #f8fafc; padding: 6px 14px; border-radius: 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s ease; cursor: pointer; }
-        .help-icon { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: rgba(251, 191, 36, 0.2); color: #fbbf24; border-radius: 4px; font-size: 10px; }
+        
+        .help-badge {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .help-badge:hover {
+            background: #334155;
+            border-color: #fbbf24;
+            color: #fbbf24;
+        }
+        .help-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        /* SUPPORT BOX */
+        .support-container {
+            position: relative;
+            margin-top: 1.5rem;
+            width: 100%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 24px;
+            border: 1px solid rgba(251, 191, 36, 0.1);
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), rgba(2, 6, 23, 0.9));
+        }
+
+        .donate-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-[10px] font-black uppercase tracking-widest transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .donate-btn:hover {
+            background: #29abe0;
+            color: #fff;
+            transform: scale(1.05);
+            border-color: #29abe0;
+        }
+
         .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #fbbf24; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
         .gallery-container-rel { position: relative; display: flex; align-items: center; width: 100%; }
         .gallery-wrapper { display: flex; overflow-x: auto; gap: 1rem; padding: 10px 0; scrollbar-width: none; scroll-behavior: smooth; width: 100%; }
-        .gallery-item { width: 140px; height: 90px; object-fit: cover; cursor: pointer; border: 2px solid transparent; transition: 0.2s; border-radius: 12px; }
+        .gallery-wrapper::-webkit-scrollbar { display: none; }
+        .gallery-item-container { position: relative; flex: 0 0 auto; border-radius: 12px; overflow: hidden; }
+        .gallery-item { width: 140px; height: 90px; object-fit: cover; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+        .gallery-item:hover { border-color: #fbbf24; }
+        
+        .scroll-arrow { position: absolute; z-index: 20; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.1); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; opacity: 0; pointer-events: none; }
+        .gallery-container-rel:hover .scroll-arrow { opacity: 1; pointer-events: auto; }
+        .arrow-left-g { left: -16px; } .arrow-right-g { right: -16px; }
+
+        /* MODALS */
         #modal, #welcome-modal { display: none; position: fixed; inset: 0; z-index: 100; backdrop-filter: blur(20px); background: rgba(0,0,0,0.9); overflow-y: auto; padding: 40px 0; }
+        #confirm-modal, #help-modal { display: none; position: fixed; inset: 0; z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(10px); background: rgba(0,0,0,0.85); }
+        
         .modal-content { width: 90%; max-width: 1400px; margin: 0 auto; position: relative; display: flex; flex-direction: column; align-items: center; gap: 24px; }
-        #modal-img { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 12px; max-width: 100%; height: auto; }
+        
+        #modal-img { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 12px; max-width: 100%; height: auto; display: block; }
+        
+        .nav-arrow { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.05); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; z-index: 120; border: 1px solid rgba(255,255,255,0.1); transition: 0.2s; }
+        .nav-arrow:hover { background: #fbbf24; color: black; }
+        
+        .close-circle { position: fixed; top: 20px; right: 20px; width: 45px; height: 45px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; z-index: 130; font-size: 20px; }
+        .close-circle:hover { background: rgba(255, 0, 0, 0.5); }
+
+        .download-menu { display: none; position: absolute; bottom: 100%; left: 0; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 8px; z-index: 150; }
+        .download-menu button { display: block; width: 100%; padding: 12px 24px; text-align: left; font-size: 10px; font-weight: bold; color: white; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .download-menu button:hover { background: #fbbf24; color: black; }
+
+        @media (max-width: 1024px) { .nav-arrow { position: absolute; } .arrow-left { left: 10px; } .arrow-right { right: 10px; } }
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen">
 
     <div id="welcome-modal" class="fixed inset-0 z-[300] flex items-center justify-center p-4">
         <div class="glass p-8 rounded-[2.5rem] border-white/10 max-w-lg w-full space-y-6 shadow-2xl relative">
-            <h2 class="text-3xl font-black text-white text-center uppercase">Lumina Visuals</h2>
-            <button onclick="closeWelcome()" class="lumina-btn w-full text-black font-black py-4 rounded-2xl uppercase text-[11px] tracking-widest">Enter Studio</button>
+            <div class="text-center space-y-2">
+                <div class="text-yellow-500 font-black text-xs uppercase tracking-[0.3em]">Welcome to</div>
+                <h2 class="text-3xl font-black text-white tracking-tighter uppercase">Lumina Visuals</h2>
+            </div>
+            
+            <div class="space-y-4 text-slate-300 text-sm leading-relaxed">
+                <p>Lumina Visuals is an AI-powered creative studio designed to turn your text descriptions into high-quality images in seconds.</p>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
+                    <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Model & API</p>
+                    <p class="text-xs">This site leverages the <strong>Flux.1 Schnell</strong> model through the <strong>Pollinations.ai</strong> API. This allows us to offer a professional-grade generation experience for free.</p>
+                </div>
+                <div class="bg-red-500/5 p-4 rounded-2xl border border-red-500/10 space-y-2">
+                    <p class="text-[10px] font-black uppercase text-red-500 tracking-widest">Beta & Limits</p>
+                    <p class="text-xs italic text-slate-400">As a free service in <strong>BETA</strong>, performance depends on the API's current load. You might encounter slower generation times or temporary unavailability during peak hours.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <button onclick="closeWelcome()" class="lumina-btn w-full text-black font-black py-4 rounded-2xl uppercase text-[11px] tracking-widest">Enter Studio</button>
+                <label class="flex items-center justify-center gap-2 cursor-pointer opacity-50 hover:opacity-100 transition-opacity">
+                    <input type="checkbox" id="dont-show-welcome" class="accent-yellow-500">
+                    <span class="text-[10px] font-bold uppercase tracking-tighter text-slate-400">Don't show this again</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div id="help-modal" onclick="closeHelp()">
+        <div class="glass p-8 rounded-[2.5rem] border-white/10 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto space-y-6 shadow-2xl text-left" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-black uppercase tracking-tighter text-yellow-500">How to use Lumina</h3>
+                <button onclick="closeHelp()" class="text-slate-500 hover:text-white">✕</button>
+            </div>
+            <div class="space-y-4 text-sm leading-relaxed text-slate-300">
+                <section>
+                    <h4 class="font-black text-white uppercase text-[10px] tracking-widest mb-1">1. Prompting</h4>
+                    <p>Enter descriptions in English. Use the **Negative Prompt** to exclude things like "text, watermark, low quality".</p>
+                </section>
+                <section>
+                    <h4 class="font-black text-white uppercase text-[10px] tracking-widest mb-1">2. Styles & Ratios</h4>
+                    <p>Choose an artistic **Style** and the **Ratio** (1:1, 16:9, or 9:16).</p>
+                </section>
+                <section>
+                    <h4 class="font-black text-white uppercase text-[10px] tracking-widest mb-1">3. Vivid Mode</h4>
+                    <p>Enhances contrast and color saturation for more striking results.</p>
+                </section>
+            </div>
+            <button onclick="closeHelp()" class="w-full bg-yellow-500 text-black py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white transition-colors">Got it</button>
+        </div>
+    </div>
+
+    <div id="confirm-modal" onclick="closeConfirm()">
+        <div class="glass p-8 rounded-[2rem] border-white/10 max-w-sm w-full text-center space-y-6 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto text-2xl">✕</div>
+            <h3 class="text-lg font-black uppercase tracking-tighter">Delete?</h3>
+            <div class="flex flex-col gap-3">
+                <button id="confirm-yes" class="bg-red-500 text-white font-black py-4 rounded-2xl uppercase text-[10px] tracking-widest hover:bg-red-600 transition-colors">Confirm</button>
+                <button onclick="closeConfirm()" class="bg-white/5 text-slate-400 font-bold py-4 rounded-2xl uppercase text-[10px] tracking-widest hover:bg-white/10 transition-colors">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" onclick="closeModal()">
+        <div class="close-circle" onclick="closeModal()">✕</div>
+        <div class="nav-arrow arrow-left" style="left:20px" onclick="event.stopPropagation(); prevImg()">&#10094;</div>
+        <div class="nav-arrow arrow-right" style="right:20px" onclick="event.stopPropagation(); nextImg()">&#10095;</div>
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-counter" class="text-[10px] font-black tracking-[0.3em] text-yellow-500 uppercase">0 / 0</div>
+            <div class="relative flex items-center justify-center w-full">
+                <img id="modal-img" src="">
+            </div>
+            <div class="flex gap-4 relative pb-10">
+                <button id="modal-restore-btn" class="bg-yellow-500 text-black px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest active:scale-95">Restore</button>
+                <div class="relative">
+                    <button id="dl-btn" class="bg-white/10 text-white px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest border border-white/10">Download</button>
+                    <div id="dl-menu" class="download-menu shadow-2xl">
+                        <button onclick="downloadFormat('png')">PNG</button>
+                        <button onclick="downloadFormat('jpg')">JPG</button>
+                        <button onclick="downloadFormat('webp')">WEBP</button>
+                    </div>
+                </div>
+                <button onclick="askDeleteCurrent()" class="bg-red-500/10 text-red-500 px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest border border-red-500/20">Delete</button>
+            </div>
         </div>
     </div>
 
     <div class="max-w-6xl mx-auto space-y-8">
-        <header class="flex justify-between items-center border-b border-white/5 pb-6">
-            <h1 class="text-3xl md:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase">LUMINA VISUALS</h1>
-            <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap self-center">Waiting...</div>
+        <header class="flex justify-between items-end border-b border-white/5 pb-6">
+            <div>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase">LUMINA VISUALS</h1>
+                    <span class="text-[10px] font-black text-white/20 tracking-widest uppercase mt-2">BETA</span>
+                </div>
+                <div class="flex items-center gap-4 mt-2">
+                    <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em]">Vivid Visions Crafted</p>
+                    <div class="flex gap-2 border-l border-white/10 pl-4">
+                        <button onclick="openHelp()" class="help-badge">
+                            <span class="help-icon">?</span>
+                            <span>Guide</span>
+                        </button>
+                        <button onclick="showWelcomeManual()" class="help-badge">
+                            <span class="help-icon">i</span>
+                            <span>About</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest">Waiting...</div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            <div class="glass p-8 rounded-3xl space-y-6 border-white/5">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-yellow-500 uppercase">Engine</label>
-                    <select id="engine" class="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
-                        <option value="pollinations">Lumina Core (Flux)</option>
-                        <option value="subnp">Subnp (Experimental)</option>
-                    </select>
+            <div class="flex flex-col">
+                <div class="glass p-8 rounded-3xl space-y-6 border-white/5">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prompt</label>
+                        <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm" rows="4" placeholder="Enter your vision..."></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-red-500/40 uppercase tracking-widest">Negative Prompt</label>
+                        <textarea id="negative" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-3 text-white text-xs" rows="2" placeholder="Elements to avoid..."></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <select id="style" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
+                            <option value="none">None</option>
+                            <option value="photorealistic">Photorealistic</option>
+                            <option value="cyberpunk">Cyberpunk</option>
+                            <option value="fantasy">Epic Fantasy</option>
+                            <option value="anime">Anime Style</option>
+                            <option value="oil">Oil Painting</option>
+                        </select>
+                        <select id="ratio" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
+                            <option value="1:1">1:1</option>
+                            <option value="16:9">16:9</option>
+                            <option value="9:16">9:16</option>
+                        </select>
+                    </div>
+                    <label class="flex items-center gap-3 cursor-pointer p-3 rounded-2xl bg-white/5 border border-white/5">
+                        <input type="checkbox" id="enhance" class="w-4 h-4 accent-yellow-500">
+                        <span class="text-[10px] font-bold text-slate-300 uppercase">Vivid Mode</span>
+                    </label>
+                    <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Generate Vision</button>
                 </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase">Prompt</label>
-                    <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm" rows="4"></textarea>
+
+                <div class="support-container">
+                    <span class="text-[8px] font-black text-yellow-500/50 tracking-[0.5em] mb-4 uppercase">Support Lumina</span>
+                    <p class="text-[11px] text-slate-400 font-medium leading-relaxed mb-6">
+                        Help us keep the servers running and improve the artificial intelligence.
+                    </p>
+                    <a href="https://ko-fi.com/luminaai" target="_blank" class="donate-btn">
+                        <span>💙</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest">Support on Ko-fi</span>
+                    </a>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <select id="ratio" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
-                        <option value="1:1">1:1</option>
-                        <option value="16:9">16:9</option>
-                    </select>
-                </div>
-                <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Generate Vision</button>
             </div>
 
             <div class="lg:col-span-2 space-y-8">
-                <div id="preview-area" class="glass min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative border-white/5">
+                <div id="preview-area" class="glass min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden border-white/5">
                     <div id="loader" class="hidden flex flex-col items-center gap-4">
                         <div class="loader"></div>
                         <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Generation in progress...</p>
                     </div>
-                    <img id="out-img" class="hidden shadow-2xl max-h-[500px] rounded-2xl">
-                    <div id="ph" class="text-8xl font-black italic opacity-5 uppercase">Lumina</div>
+                    <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl max-h-[500px] rounded-2xl cursor-zoom-in">
+                    <div id="ph" class="text-8xl font-black italic opacity-5 uppercase select-none">Lumina</div>
+                    <button id="var-btn" onclick="generateVariation()" class="hidden absolute bottom-6 right-6 bg-black/40 backdrop-blur-xl px-6 py-3 rounded-full text-[10px] font-black uppercase border border-white/10 hover:bg-yellow-500 hover:text-black transition-all">Variation</button>
                 </div>
-                <div id="gallery" class="gallery-wrapper"></div>
+
+                <div class="glass p-6 rounded-3xl space-y-4 border-white/5">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                        <h2 class="text-[10px] font-black uppercase tracking-widest text-yellow-500">Session Gallery</h2>
+                        <div class="flex gap-3">
+                            <button onclick="downloadZip()" class="text-[9px] font-bold bg-white/5 px-4 py-2 rounded-full uppercase border border-white/10">Export ZIP</button>
+                            <button onclick="clearG()" class="text-[9px] font-bold text-red-500/50 px-4 py-2 rounded-full uppercase">Reset</button>
+                        </div>
+                    </div>
+                    <div class="gallery-container-rel">
+                        <div class="scroll-arrow arrow-left-g" onclick="scrollGallery(-300)">&#10094;</div>
+                        <div id="gallery" class="gallery-wrapper"></div>
+                        <div class="scroll-arrow arrow-right-g" onclick="scrollGallery(300)">&#10095;</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const API_URL = "https://lumina-ai-l1hs.onrender.com";
-        let fullHistory = [];
+        const API_URL = "https://lumina-ai-l1hs.onrender.com"; 
+        let fullHistory = []; 
+        let currentIdx = -1;
+        let lastSeed = -1;
+        let deleteTargetIdx = -1;
 
-        function closeWelcome() { document.getElementById('welcome-modal').style.display = 'none'; }
+        // WELCOME POPUP LOGIC
+        window.addEventListener('DOMContentLoaded', () => {
+            const skipWelcome = localStorage.getItem('lumina_skip_welcome');
+            if (!skipWelcome) {
+                document.getElementById('welcome-modal').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.getElementById('welcome-modal').style.display = 'none';
+            }
+        });
+
+        function closeWelcome() {
+            if (document.getElementById('dont-show-welcome').checked) {
+                localStorage.setItem('lumina_skip_welcome', 'true');
+            }
+            document.getElementById('welcome-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function showWelcomeManual() {
+            document.getElementById('welcome-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            document.getElementById('dont-show-welcome').checked = false; 
+        }
+
+        function openHelp() { document.getElementById('help-modal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        function closeHelp() { document.getElementById('help-modal').style.display = 'none'; document.body.style.overflow = 'auto'; }
+
+        document.getElementById('dl-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const m = document.getElementById('dl-menu');
+            m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        });
+        window.addEventListener('click', () => { document.getElementById('dl-menu').style.display = 'none'; });
 
         async function checkServer() {
             try {
@@ -100,55 +369,119 @@
             } catch(e) {}
         }
         checkServer();
+        setInterval(checkServer, 10000);
 
-        async function processAndGenerate() {
-            const prompt = document.getElementById('prompt').value;
-            if(!prompt) return;
-            const engine = document.getElementById('engine').value;
-            const seed = Math.floor(Math.random() * 999999);
+        function scrollGallery(amt) { document.getElementById('gallery').scrollBy({ left: amt, behavior: 'smooth' }); }
 
+        async function processAndGenerate(seedToUse = -1) {
+            const promptVal = document.getElementById('prompt').value;
+            if(!promptVal) return;
+            
+            const currentParams = {
+                prompt: promptVal, negative_prompt: document.getElementById('negative').value,
+                style: document.getElementById('style').value, ratio: document.getElementById('ratio').value,
+                enhance: document.getElementById('enhance').checked
+            };
             document.getElementById('loader').classList.remove('hidden');
             document.getElementById('out-img').classList.add('hidden');
             document.getElementById('ph').classList.add('hidden');
+            document.getElementById('var-btn').classList.add('hidden');
 
             try {
-                const endpoint = engine === 'pollinations' ? "/generate" : "/generate_subnp";
-                const response = await fetch(API_URL + endpoint, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        prompt: prompt,
-                        ratio: document.getElementById('ratio').value,
-                        seed: seed,
-                        width: 1024, height: 1024
-                    })
+                const r = await fetch(`${API_URL}/generate`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ ...currentParams, seed: seedToUse })
                 });
-
-                const data = await response.json();
-                console.log("Server Response:", data); // LOG PER DEBUG
-
-                if(data.error) throw new Error(data.error);
-
-                const bytes = new Uint8Array(data.image.match(/.{1,2}/g).map(b => parseInt(b, 16)));
+                const d = await r.json();
+                lastSeed = d.seed;
+                const bytes = new Uint8Array(d.image.match(/.{1,2}/g).map(b => parseInt(b, 16)));
                 const url = URL.createObjectURL(new Blob([bytes], {type:'image/png'}));
-
                 document.getElementById('out-img').src = url;
                 document.getElementById('out-img').classList.remove('hidden');
-                
-                fullHistory.unshift({url});
+                document.getElementById('var-btn').classList.remove('hidden');
+                fullHistory.unshift({ ...currentParams, url, seed: d.seed, hex: d.image });
                 renderGallery();
-
-            } catch(e) {
-                alert("Error: " + e.message);
-                console.error(e);
-            } finally {
-                document.getElementById('loader').classList.add('hidden');
-            }
+                document.getElementById('gallery').scrollTo({ left: 0, behavior: 'smooth' });
+            } catch(e) { alert("Server is loading..."); }
+            finally { document.getElementById('loader').classList.add('hidden'); }
         }
 
         function renderGallery() {
             const g = document.getElementById('gallery');
-            g.innerHTML = fullHistory.map(item => `<img src="${item.url}" class="gallery-item">`).join('');
+            g.innerHTML = '';
+            fullHistory.forEach((item, index) => {
+                const cont = document.createElement('div');
+                cont.className = 'gallery-item-container';
+                cont.innerHTML = `<img src="${item.url}" class="gallery-item" onclick="openModal(${index})">`;
+                g.appendChild(cont);
+            });
+        }
+
+        function openModal(index) {
+            if(index < 0 || index >= fullHistory.length) return;
+            currentIdx = index;
+            const item = fullHistory[index];
+            document.getElementById('modal-img').src = item.url;
+            document.getElementById('modal-counter').innerText = `${index + 1} / ${fullHistory.length}`;
+            document.getElementById('modal').style.display = 'block'; 
+            document.body.style.overflow = 'hidden'; 
+            document.getElementById('modal-restore-btn').onclick = (e) => { 
+                e.stopPropagation(); restoreParams(item); closeModal(); 
+            };
+        }
+
+        function closeModal() { 
+            document.getElementById('modal').style.display = 'none'; 
+            document.body.style.overflow = 'auto'; 
+        }
+        function nextImg() { openModal(currentIdx + 1); }
+        function prevImg() { openModal(currentIdx - 1); }
+        function askDeleteCurrent() { if(currentIdx !== -1) { deleteTargetIdx = currentIdx; document.getElementById('confirm-modal').style.display = 'flex'; } }
+        function closeConfirm() { document.getElementById('confirm-modal').style.display = 'none'; }
+        
+        document.getElementById('confirm-yes').onclick = () => {
+            if(deleteTargetIdx === -2) { fullHistory = []; }
+            else if(deleteTargetIdx !== -1) { fullHistory.splice(deleteTargetIdx, 1); closeModal(); }
+            renderGallery(); closeConfirm();
+        };
+
+        function restoreParams(item) {
+            document.getElementById('prompt').value = item.prompt;
+            document.getElementById('negative').value = item.negative_prompt;
+            document.getElementById('style').value = item.style;
+            document.getElementById('ratio').value = item.ratio;
+            document.getElementById('enhance').checked = item.enhance;
+            document.getElementById('out-img').src = item.url;
+            document.getElementById('out-img').classList.remove('hidden');
+            document.getElementById('ph').classList.add('hidden');
+            lastSeed = item.seed;
+        }
+
+        function generateVariation() { if(lastSeed !== -1) processAndGenerate(lastSeed + 1); }
+        async function downloadZip() {
+            const hexes = fullHistory.map(i => i.hex);
+            if(hexes.length === 0) return;
+            const r = await fetch(`${API_URL}/zip`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ images: hexes })
+            });
+            const d = await r.json();
+            const a = document.createElement('a');
+            a.href = "data:application/zip;base64," + d.zip;
+            a.download = "Lumina_Session.zip"; a.click();
+        }
+        function clearG() { if(fullHistory.length > 0) { deleteTargetIdx = -2; document.getElementById('confirm-modal').style.display = 'flex'; } }
+        function downloadFormat(ext) {
+            const item = fullHistory[currentIdx];
+            const canvas = document.createElement('canvas');
+            const img = document.getElementById('modal-img');
+            canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            if(ext === 'jpg') { ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0,0,canvas.width, canvas.height); }
+            ctx.drawImage(img, 0, 0);
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL(`image/${ext === 'jpg' ? 'jpeg' : ext}`, 0.9);
+            a.download = `lumina_${item.seed}.${ext}`; a.click();
         }
     </script>
 </body>
