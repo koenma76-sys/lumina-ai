@@ -1,10 +1,11 @@
-
 import os
 import requests
 import uvicorn
 import random
 import base64
 import io
+import threading
+import time
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -19,6 +20,22 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# --- LOGICA CRONJOB INTERNA (KEEP-ALIVE) ---
+def keep_alive():
+    """Invia una richiesta al server stesso ogni 10 minuti per evitare lo sleep di Render."""
+    time.sleep(30) # Aspetta che il server sia effettivamente avviato
+    server_url = "http://0.0.0.0:" + os.environ.get("PORT", "8000")
+    while True:
+        try:
+            requests.get(server_url)
+        except:
+            pass
+        time.sleep(600) # 600 secondi = 10 minuti
+
+# Avvia il thread del cronjob
+threading.Thread(target=keep_alive, daemon=True).start()
+# -------------------------------------------
 
 class GenRequest(BaseModel):
     prompt: str
