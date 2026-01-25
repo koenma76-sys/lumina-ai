@@ -21,21 +21,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- CONFIGURAZIONE EVOLINK ---
+EVOLINK_API_KEY = "sk-2iVlG1abuFFZKCT4D5E46nUL92rJAvqtwdDRB8moBNIB75YZ" 
+EVOLINK_BASE_URL = "https://api.evolink.ai/v1"
+
 # --- LOGICA CRONJOB INTERNA (KEEP-ALIVE) ---
 def keep_alive():
     """Invia una richiesta al server stesso ogni 10 minuti per evitare lo sleep di Render."""
-    time.sleep(30) # Aspetta che il server sia effettivamente avviato
-    server_url = "http://0.0.0.0:" + os.environ.get("PORT", "8000")
+    time.sleep(30)
+    port = os.environ.get("PORT", "8000")
+    server_url = f"http://0.0.0.0:{port}"
     while True:
         try:
             requests.get(server_url)
         except:
             pass
-        time.sleep(600) # 600 secondi = 10 minuti
+        time.sleep(600)
 
-# Avvia il thread del cronjob
 threading.Thread(target=keep_alive, daemon=True).start()
-# -------------------------------------------
 
 class GenRequest(BaseModel):
     prompt: str
@@ -47,11 +50,11 @@ class GenRequest(BaseModel):
 
 @app.get("/")
 async def health_check():
-    return {"status": "online", "message": "Lumina Backend is running"}
+    return {"status": "online", "message": "Lumina Backend (Evolink Turbo) is running"}
 
 @app.post("/generate")
 async def generate(data: GenRequest):
-    # STILI RIFINITI PER EVITARE L'EFFETTO "DIPINTO/ACQUERELLO"
+    # Configurazione stili (mantenuta dal tuo backup)
     style_configs = {
         "photorealistic": {
             "prefix": "Photorealistic cinematic shot, high detail, 8k, f/1.8, high skin detail, detailed eyes, masterwork photography, sharp focus,",
@@ -76,37 +79,54 @@ async def generate(data: GenRequest):
     }
 
     config = style_configs.get(data.style, {"prefix": "", "negative": ""})
-    
-    # Prefisso prima del prompt per dominare la generazione
     final_prompt = f"{config['prefix']} {data.prompt}" if config['prefix'] else data.prompt
-    
     if data.enhance:
         final_prompt += ", cinematic lighting, masterpiece, ultra high resolution, highly detailed"
 
-    current_seed = data.seed if data.seed != -1 else random.randint(0, 999999)
+    current_seed = data.seed if data.seed != -1 else random.randint(1, 2147483647)
     
-    # Ratio logic
-    w, h = 1024, 1024
-    if data.ratio == "16:9": w, h = 1280, 720
-    elif data.ratio == "9:16": w, h = 720, 1280
+    # Payload per Evolink (z-image-turbo usa 'size' come stringa es. "1:1")
+    headers = {
+        "Authorization": f"Bearer {EVOLINK_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "model": "z-image-turbo",
+        "prompt": final_prompt,
+        "negative_prompt": f"{config['negative']}, {data.negative_prompt}",
+        "size": data.ratio,
+        "seed": current_seed
+    }
 
-    # Negative Prompt consolidato
-    base_neg = "low quality, blurry, worst quality, distorted, watermark, signature"
-    style_neg = config['negative']
-    user_neg = data.negative_prompt
-    
-    full_neg = f"{base_neg}, {style_neg}, {user_neg}"
-
-    encoded_prompt = requests.utils.quote(final_prompt)
-    encoded_neg = requests.utils.quote(full_neg)
-    
-    api_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?seed={current_seed}&width={w}&height={h}&nologo=true&negative={encoded_neg}"
-    
     try:
-        r = requests.get(api_url, timeout=60)
-        if r.status_code != 200:
-            raise HTTPException(status_code=500, detail="Pollinations API error")
-        return {"image": r.content.hex(), "seed": current_seed}
+        # 1. Crea il Task
+        create_resp = requests.post(f"{EVOLINK_BASE_URL}/images/generations", json=payload, headers=headers, timeout=30)
+        if create_resp.status_code != 200:
+            raise HTTPException(status_code=500, detail=f"Evolink Error: {create_resp.text}")
+        
+        task_id = create_resp.json().get("id")
+
+        # 2. Polling (Attesa dell'immagine)
+        image_url = None
+        for _ in range(20): # Massimo 20 secondi (Turbo è quasi istantaneo)
+            time.sleep(1)
+            status_resp = requests.get(f"{EVOLINK_BASE_URL}/tasks/{task_id}", headers=headers)
+            status_data = status_resp.json()
+            
+            if status_data.get("status") == "completed":
+                image_url = status_data.get("images", [None])[0]
+                break
+            elif status_data.get("status") == "failed":
+                raise HTTPException(status_code=500, detail="Evolink task failed")
+
+        if not image_url:
+            raise HTTPException(status_code=504, detail="Generation timed out")
+
+        # 3. Scarica l'immagine e convertila in HEX per il frontend
+        img_content = requests.get(image_url).content
+        return {"image": img_content.hex(), "seed": current_seed}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -117,7 +137,8 @@ async def make_zip(data: dict):
     with ZipFile(buf, "w", ZIP_DEFLATED) as f:
         for i, hex_data in enumerate(imgs):
             try:
-                img_data = base64.b16decode(hex_data.upper())
+                # Correzione: usiamo bytes.fromhex per maggiore stabilità con i dati Evolink
+                img_data = bytes.fromhex(hex_data)
                 f.writestr(f"lumina_art_{i}.png", img_data)
             except: continue
     buf.seek(0)
