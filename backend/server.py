@@ -186,25 +186,47 @@ async def generate(data: GenRequest):
                     task_data = task_check.json()
                     logger.info(f"Task status: {task_data.get('status')}, attempt {attempt+1}")
                     
-                    # Se completato
-                    if task_data.get("status") == "succeeded":
-                        logger.info(f"Task succeeded! Full response: {task_data}")
+                    # Se completato (può essere "succeeded" o "completed")
+                    if task_data.get("status") in ["succeeded", "completed"]:
+                        logger.info(f"Task completed! Full response: {task_data}")
                         
                         # Prova diversi formati di risposta possibili
                         image_url = None
+                        b64_data = None
                         
                         # Formato 1: data array con url
-                        if "data" in task_data and len(task_data["data"]) > 0:
-                            image_url = task_data["data"][0].get("url")
+                        if "data" in task_data and isinstance(task_data["data"], list) and len(task_data["data"]) > 0:
+                            first_item = task_data["data"][0]
+                            image_url = first_item.get("url")
+                            b64_data = first_item.get("b64_json")
                         
-                        # Formato 2: url diretto
-                        if not image_url and "url" in task_data:
+                        # Formato 2: data object con url/b64
+                        elif "data" in task_data and isinstance(task_data["data"], dict):
+                            image_url = task_data["data"].get("url")
+                            b64_data = task_data["data"].get("b64_json")
+                        
+                        # Formato 3: url diretto nel task
+                        elif "url" in task_data:
                             image_url = task_data["url"]
                         
-                        # Formato 3: result.url
-                        if not image_url and "result" in task_data:
-                            image_url = task_data["result"].get("url")
+                        # Formato 4: result object
+                        elif "result" in task_data:
+                            if isinstance(task_data["result"], dict):
+                                image_url = task_data["result"].get("url")
+                                b64_data = task_data["result"].get("b64_json")
                         
+                        # Prova prima b64 se disponibile
+                        if b64_data:
+                            logger.info(f"Found base64 data in response")
+                            try:
+                                img_bytes = base64.b64decode(b64_data)
+                                hex_image = img_bytes.hex()
+                                logger.info(f"Successfully converted b64 to hex, length: {len(hex_image)}")
+                                return {"image": hex_image, "seed": current_seed}
+                            except Exception as e:
+                                logger.error(f"Failed to decode b64: {e}")
+                        
+                        # Altrimenti prova URL
                         if image_url:
                             logger.info(f"Downloading image from: {image_url}")
                             img_response = requests.get(image_url, timeout=30)
