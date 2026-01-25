@@ -124,24 +124,49 @@ async def generate(data: GenRequest):
     logger.info(f"Calling Evolink API with seed: {current_seed}, ratio: {data.ratio}")
     
     try:
-        # Step 1: Crea il task
+        # Chiamata all'API
         r = requests.post(EVOLINK_API_URL, headers=headers, json=payload, timeout=90)
         
         logger.info(f"API Response Status: {r.status_code}")
-        logger.info(f"API Response: {r.text[:500]}")
         
         if r.status_code != 200:
             error_detail = r.text
             logger.error(f"API Error: {error_detail}")
             raise HTTPException(status_code=500, detail=f"Evolink API error ({r.status_code}): {error_detail}")
         
-        task_response = r.json()
+        response_data = r.json()
+        logger.info(f"API Response keys: {list(response_data.keys())}")
+        logger.info(f"Full API Response: {response_data}")
         
-        # Controlla se è un sistema asincrono (task-based)
-        if "id" in task_response and "status" in task_response:
-            task_id = task_response["id"]
-            logger.info(f"Task created: {task_id}, status: {task_response['status']}")
+        # CASO 1: Risposta sincrona con immagine diretta
+        if "data" in response_data and len(response_data["data"]) > 0:
+            first_item = response_data["data"][0]
             
+            # Sub-caso A: base64 diretto
+            if "b64_json" in first_item:
+                logger.info("Found b64_json in response")
+                b64_image = first_item["b64_json"]
+                img_bytes = base64.b64decode(b64_image)
+                hex_image = img_bytes.hex()
+                logger.info(f"Successfully converted b64 to hex, length: {len(hex_image)}")
+                return {"image": hex_image, "seed": current_seed}
+            
+            # Sub-caso B: URL diretto
+            elif "url" in first_item:
+                logger.info(f"Found URL in response: {first_item['url']}")
+                img_response = requests.get(first_item["url"], timeout=30)
+                if img_response.status_code == 200:
+                    hex_image = img_response.content.hex()
+                    logger.info(f"Successfully downloaded image, hex length: {len(hex_image)}")
+                    return {"image": hex_image, "seed": current_seed}
+        
+        # CASO 2: Sistema asincrono task-based
+        if "id" in response_data and "status" in response_data:
+            task_id = response_data["id"]
+            logger.info(f"Async task created: {task_id}, initial status: {response_data['status']}")
+            
+            
+            # Polling del task
             # Step 2: Polling per ottenere il risultato con backoff
             max_attempts = 120  # 120 tentativi = fino a 2 minuti
             wait_time = 0.5  # Inizia con 0.5 secondi
@@ -163,41 +188,49 @@ async def generate(data: GenRequest):
                     
                     # Se completato
                     if task_data.get("status") == "succeeded":
-                        if "data" in task_data and len(task_data["data"]) > 0:
-                            # Scarica l'immagine dall'URL
-                            image_url = task_data["data"][0].get("url")
-                            if image_url:
-                                logger.info(f"Downloading image from: {image_url}")
-                                img_response = requests.get(image_url, timeout=30)
-                                if img_response.status_code == 200:
-                                    hex_image = img_response.content.hex()
-                                    logger.info(f"Successfully generated image with seed: {current_seed}")
-                                    return {"image": hex_image, "seed": current_seed}
+                        logger.info(f"Task succeeded! Full response: {task_data}")
                         
-                        raise HTTPException(status_code=500, detail="Image URL not found in response")
+                        # Prova diversi formati di risposta possibili
+                        image_url = None
+                        
+                        # Formato 1: data array con url
+                        if "data" in task_data and len(task_data["data"]) > 0:
+                            image_url = task_data["data"][0].get("url")
+                        
+                        # Formato 2: url diretto
+                        if not image_url and "url" in task_data:
+                            image_url = task_data["url"]
+                        
+                        # Formato 3: result.url
+                        if not image_url and "result" in task_data:
+                            image_url = task_data["result"].get("url")
+                        
+                        if image_url:
+                            logger.info(f"Downloading image from: {image_url}")
+                            img_response = requests.get(image_url, timeout=30)
+                            if img_response.status_code == 200:
+                                hex_image = img_response.content.hex()
+                                logger.info(f"Successfully generated image, hex length: {len(hex_image)}")
+                                return {"image": hex_image, "seed": current_seed}
+                            else:
+                                logger.error(f"Failed to download image, status: {img_response.status_code}")
+                        
+                        logger.error(f"Image URL not found in response: {task_data}")
+                        raise HTTPException(status_code=500, detail=f"Image URL not found in response: {task_data}")
                     
                     # Se fallito
                     elif task_data.get("status") in ["failed", "canceled"]:
                         error_msg = task_data.get("error", "Unknown error")
                         raise HTTPException(status_code=500, detail=f"Task failed: {error_msg}")
             
-            # Timeout
+            
+            # Timeout dopo polling
+            logger.error("Task polling timeout after 120 attempts")
             raise HTTPException(status_code=504, detail="Task timeout - image generation took too long (>2 minutes)")
         
-        # Fallback: se restituisce direttamente l'immagine (formato sincrono)
-        elif "data" in task_response and len(task_response["data"]) > 0:
-            if "b64_json" in task_response["data"][0]:
-                b64_image = task_response["data"][0]["b64_json"]
-                img_bytes = base64.b64decode(b64_image)
-                hex_image = img_bytes.hex()
-                return {"image": hex_image, "seed": current_seed}
-            elif "url" in task_response["data"][0]:
-                image_url = task_response["data"][0]["url"]
-                img_response = requests.get(image_url, timeout=30)
-                hex_image = img_response.content.hex()
-                return {"image": hex_image, "seed": current_seed}
-        
-        raise HTTPException(status_code=500, detail=f"Unexpected response format: {task_response}")
+        # CASO 3: Formato non riconosciuto
+        logger.error(f"Unexpected response format: {response_data}")
+        raise HTTPException(status_code=500, detail=f"Unexpected API response format. Keys: {list(response_data.keys())}")
             
     except requests.exceptions.Timeout:
         logger.error("Request timeout")
