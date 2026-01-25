@@ -2,5 +2,4 @@ fastapi
 uvicorn
 requests
 pydantic
-flask
-flask-cors
+python-multipart
