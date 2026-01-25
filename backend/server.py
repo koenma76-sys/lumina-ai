@@ -142,10 +142,16 @@ async def generate(data: GenRequest):
             task_id = task_response["id"]
             logger.info(f"Task created: {task_id}, status: {task_response['status']}")
             
-            # Step 2: Polling per ottenere il risultato
-            max_attempts = 60  # 60 tentativi = 60 secondi max
+            # Step 2: Polling per ottenere il risultato con backoff
+            max_attempts = 120  # 120 tentativi = fino a 2 minuti
+            wait_time = 0.5  # Inizia con 0.5 secondi
+            
             for attempt in range(max_attempts):
-                time.sleep(1)  # Aspetta 1 secondo tra ogni check
+                time.sleep(wait_time)
+                
+                # Aumenta gradualmente il tempo di attesa (backoff esponenziale)
+                if attempt > 10:
+                    wait_time = min(2.0, wait_time * 1.1)  # Max 2 secondi
                 
                 # Query del task
                 task_url = f"https://api.evolink.ai/v1/tasks/{task_id}"
@@ -176,7 +182,7 @@ async def generate(data: GenRequest):
                         raise HTTPException(status_code=500, detail=f"Task failed: {error_msg}")
             
             # Timeout
-            raise HTTPException(status_code=504, detail="Task timeout - image generation took too long")
+            raise HTTPException(status_code=504, detail="Task timeout - image generation took too long (>2 minutes)")
         
         # Fallback: se restituisce direttamente l'immagine (formato sincrono)
         elif "data" in task_response and len(task_response["data"]) > 0:
