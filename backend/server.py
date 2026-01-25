@@ -6,10 +6,15 @@ import base64
 import io
 import threading
 import time
+import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from zipfile import ZipFile, ZIP_DEFLATED
+
+# Configura logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -55,6 +60,8 @@ async def health_check():
 
 @app.post("/generate")
 async def generate(data: GenRequest):
+    logger.info(f"Received request - Prompt: {data.prompt[:50]}...")
+    
     # STILI RIFINITI
     style_configs = {
         "photorealistic": {
@@ -118,28 +125,41 @@ async def generate(data: GenRequest):
         "response_format": "b64_json"
     }
     
+    logger.info(f"Calling Evolink API with seed: {current_seed}, size: {w}x{h}")
+    
     try:
-        r = requests.post(EVOLINK_API_URL, headers=headers, json=payload, timeout=60)
+        r = requests.post(EVOLINK_API_URL, headers=headers, json=payload, timeout=90)
+        
+        logger.info(f"API Response Status: {r.status_code}")
         
         if r.status_code != 200:
-            error_detail = r.json() if r.content else "Unknown error"
-            raise HTTPException(status_code=500, detail=f"Evolink API error: {error_detail}")
+            error_detail = r.text
+            logger.error(f"API Error: {error_detail}")
+            raise HTTPException(status_code=500, detail=f"Evolink API error ({r.status_code}): {error_detail}")
         
         response_data = r.json()
+        logger.info(f"Response keys: {response_data.keys()}")
         
         # Z Image Turbo restituisce: {"data": [{"b64_json": "..."}]}
         if "data" in response_data and len(response_data["data"]) > 0:
             b64_image = response_data["data"][0]["b64_json"]
+            logger.info(f"Received image, b64 length: {len(b64_image)}")
+            
             # Converti base64 in hex per mantenere compatibilità con il frontend
             img_bytes = base64.b64decode(b64_image)
             hex_image = img_bytes.hex()
+            
+            logger.info(f"Successfully generated image with seed: {current_seed}")
             return {"image": hex_image, "seed": current_seed}
         else:
+            logger.error(f"Invalid response format: {response_data}")
             raise HTTPException(status_code=500, detail="Invalid API response format")
             
     except requests.exceptions.Timeout:
+        logger.error("Request timeout")
         raise HTTPException(status_code=504, detail="Request timeout")
     except Exception as e:
+        logger.error(f"Exception: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/zip")
