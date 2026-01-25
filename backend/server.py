@@ -27,7 +27,10 @@ app.add_middleware(
 )
 
 # --- CONFIGURAZIONE Z IMAGE TURBO ---
-EVOLINK_API_KEY = "sk-2iVlG1abuFFZKCT4D5E46nUL92rJAvqtwdDRB8moBNIB75YZ"
+EVOLINK_API_KEY = os.environ.get("EVOLINK_API_KEY")
+if not EVOLINK_API_KEY:
+    logger.error("EVOLINK_API_KEY not found in environment variables!")
+    raise ValueError("Missing EVOLINK_API_KEY environment variable")
 EVOLINK_API_URL = "https://api.evolink.ai/v1/images/generations"
 # -----------------------------------
 
@@ -95,11 +98,6 @@ async def generate(data: GenRequest):
 
     current_seed = data.seed if data.seed != -1 else random.randint(0, 999999)
     
-    # Ratio logic per Z Image Turbo
-    w, h = 1024, 1024
-    if data.ratio == "16:9": w, h = 1344, 768
-    elif data.ratio == "9:16": w, h = 768, 1344
-
     # Negative Prompt consolidato
     base_neg = "low quality, blurry, worst quality, distorted, watermark, signature"
     style_neg = config['negative']
@@ -113,51 +111,93 @@ async def generate(data: GenRequest):
         "Content-Type": "application/json"
     }
 
-    # Payload per Z Image Turbo
+    # Payload corretto per Z Image Turbo (usa "size" invece di width/height)
     payload = {
         "model": "z-image-turbo",
         "prompt": final_prompt,
         "negative_prompt": full_neg,
-        "width": w,
-        "height": h,
+        "size": data.ratio,  # "1:1", "16:9", "9:16"
         "seed": current_seed,
-        "n": 1,
-        "response_format": "b64_json"
+        "n": 1
     }
     
-    logger.info(f"Calling Evolink API with seed: {current_seed}, size: {w}x{h}")
+    logger.info(f"Calling Evolink API with seed: {current_seed}, ratio: {data.ratio}")
     
     try:
+        # Step 1: Crea il task
         r = requests.post(EVOLINK_API_URL, headers=headers, json=payload, timeout=90)
         
         logger.info(f"API Response Status: {r.status_code}")
+        logger.info(f"API Response: {r.text[:500]}")
         
         if r.status_code != 200:
             error_detail = r.text
             logger.error(f"API Error: {error_detail}")
             raise HTTPException(status_code=500, detail=f"Evolink API error ({r.status_code}): {error_detail}")
         
-        response_data = r.json()
-        logger.info(f"Response keys: {response_data.keys()}")
+        task_response = r.json()
         
-        # Z Image Turbo restituisce: {"data": [{"b64_json": "..."}]}
-        if "data" in response_data and len(response_data["data"]) > 0:
-            b64_image = response_data["data"][0]["b64_json"]
-            logger.info(f"Received image, b64 length: {len(b64_image)}")
+        # Controlla se è un sistema asincrono (task-based)
+        if "id" in task_response and "status" in task_response:
+            task_id = task_response["id"]
+            logger.info(f"Task created: {task_id}, status: {task_response['status']}")
             
-            # Converti base64 in hex per mantenere compatibilità con il frontend
-            img_bytes = base64.b64decode(b64_image)
-            hex_image = img_bytes.hex()
+            # Step 2: Polling per ottenere il risultato
+            max_attempts = 60  # 60 tentativi = 60 secondi max
+            for attempt in range(max_attempts):
+                time.sleep(1)  # Aspetta 1 secondo tra ogni check
+                
+                # Query del task
+                task_url = f"https://api.evolink.ai/v1/tasks/{task_id}"
+                task_check = requests.get(task_url, headers=headers, timeout=30)
+                
+                if task_check.status_code == 200:
+                    task_data = task_check.json()
+                    logger.info(f"Task status: {task_data.get('status')}, attempt {attempt+1}")
+                    
+                    # Se completato
+                    if task_data.get("status") == "succeeded":
+                        if "data" in task_data and len(task_data["data"]) > 0:
+                            # Scarica l'immagine dall'URL
+                            image_url = task_data["data"][0].get("url")
+                            if image_url:
+                                logger.info(f"Downloading image from: {image_url}")
+                                img_response = requests.get(image_url, timeout=30)
+                                if img_response.status_code == 200:
+                                    hex_image = img_response.content.hex()
+                                    logger.info(f"Successfully generated image with seed: {current_seed}")
+                                    return {"image": hex_image, "seed": current_seed}
+                        
+                        raise HTTPException(status_code=500, detail="Image URL not found in response")
+                    
+                    # Se fallito
+                    elif task_data.get("status") in ["failed", "canceled"]:
+                        error_msg = task_data.get("error", "Unknown error")
+                        raise HTTPException(status_code=500, detail=f"Task failed: {error_msg}")
             
-            logger.info(f"Successfully generated image with seed: {current_seed}")
-            return {"image": hex_image, "seed": current_seed}
-        else:
-            logger.error(f"Invalid response format: {response_data}")
-            raise HTTPException(status_code=500, detail="Invalid API response format")
+            # Timeout
+            raise HTTPException(status_code=504, detail="Task timeout - image generation took too long")
+        
+        # Fallback: se restituisce direttamente l'immagine (formato sincrono)
+        elif "data" in task_response and len(task_response["data"]) > 0:
+            if "b64_json" in task_response["data"][0]:
+                b64_image = task_response["data"][0]["b64_json"]
+                img_bytes = base64.b64decode(b64_image)
+                hex_image = img_bytes.hex()
+                return {"image": hex_image, "seed": current_seed}
+            elif "url" in task_response["data"][0]:
+                image_url = task_response["data"][0]["url"]
+                img_response = requests.get(image_url, timeout=30)
+                hex_image = img_response.content.hex()
+                return {"image": hex_image, "seed": current_seed}
+        
+        raise HTTPException(status_code=500, detail=f"Unexpected response format: {task_response}")
             
     except requests.exceptions.Timeout:
         logger.error("Request timeout")
         raise HTTPException(status_code=504, detail="Request timeout")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Exception: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
