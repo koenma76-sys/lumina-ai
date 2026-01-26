@@ -11,15 +11,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUMINA VISUALS | AI Art Studio</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Lumina Visuals - AI-powered image generation studio using Z Image Turbo. Create stunning AI art in seconds.">
-    <meta property="og:title" content="Lumina Visuals | AI Art Studio">
-    <meta property="og:description" content="Create stunning AI images in seconds with Z Image Turbo">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-    
+    <title>LUMINA VISUALS | Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
@@ -33,8 +25,7 @@
 
         .glass { background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(16px); }
         .lumina-btn { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); transition: all 0.3s ease; }
-        .lumina-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4); }
-        .lumina-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .lumina-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4); }
         
         .help-badge {
             background: #1e293b;
@@ -69,6 +60,7 @@
             font-size: 10px;
         }
 
+        /* SUPPORT BOX */
         .support-container {
             position: relative;
             margin-top: 1.5rem;
@@ -89,11 +81,7 @@
             border: 1px solid rgba(255,255,255,0.1);
             padding: 12px 24px;
             border-radius: 16px;
-            font-size: 10px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: all 0.3s;
+            font-[10px] font-black uppercase tracking-widest transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -119,6 +107,7 @@
         .gallery-container-rel:hover .scroll-arrow { opacity: 1; pointer-events: auto; }
         .arrow-left-g { left: -16px; } .arrow-right-g { right: -16px; }
 
+        /* MODALS */
         #modal, #welcome-modal { display: none; position: fixed; inset: 0; z-index: 100; backdrop-filter: blur(20px); background: rgba(0,0,0,0.9); overflow-y: auto; padding: 40px 0; }
         #confirm-modal, #help-modal { display: none; position: fixed; inset: 0; z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(10px); background: rgba(0,0,0,0.85); }
         
@@ -152,11 +141,11 @@
                 <p>Lumina Visuals is an AI-powered creative studio designed to turn your text descriptions into high-quality images in seconds.</p>
                 <div class="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
                     <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Model & API</p>
-                    <p class="text-xs">This site uses the <strong>Z Image Turbo</strong> model through the <strong>Evolink.ai</strong> API for fast, high-quality AI image generation.</p>
+                    <p class="text-xs">This site leverages the <strong>Flux.1 Schnell</strong> model through the <strong>Pollinations.ai</strong> API. This allows us to offer a professional-grade generation experience for free.</p>
                 </div>
                 <div class="bg-red-500/5 p-4 rounded-2xl border border-red-500/10 space-y-2">
-                    <p class="text-[10px] font-black uppercase text-red-500 tracking-widest">Beta & Performance</p>
-                    <p class="text-xs italic text-slate-400">As a service in <strong>BETA</strong>, generation times may vary based on API load. Complex images may take 30-60 seconds to generate.</p>
+                    <p class="text-[10px] font-black uppercase text-red-500 tracking-widest">Beta & Limits</p>
+                    <p class="text-xs italic text-slate-400">As a free service in <strong>BETA</strong>, performance depends on the API's current load. You might encounter slower generation times or temporary unavailability during peak hours.</p>
                 </div>
             </div>
 
@@ -212,7 +201,7 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="modal-counter" class="text-[10px] font-black tracking-[0.3em] text-yellow-500 uppercase">0 / 0</div>
             <div class="relative flex items-center justify-center w-full">
-                <img id="modal-img" src="" alt="Generated image">
+                <img id="modal-img" src="">
             </div>
             <div class="flex gap-4 relative pb-10">
                 <button id="modal-restore-btn" class="bg-yellow-500 text-black px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest active:scale-95">Restore</button>
@@ -250,7 +239,7 @@
                     </div>
                 </div>
             </div>
-            <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest">Checking...</div>
+            <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest">Waiting...</div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -283,7 +272,7 @@
                         <input type="checkbox" id="enhance" class="w-4 h-4 accent-yellow-500">
                         <span class="text-[10px] font-bold text-slate-300 uppercase">Vivid Mode</span>
                     </label>
-                    <button id="gen-btn" onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Generate Vision</button>
+                    <button onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Generate Vision</button>
                 </div>
 
                 <div class="support-container">
@@ -303,9 +292,8 @@
                     <div id="loader" class="hidden flex flex-col items-center gap-4">
                         <div class="loader"></div>
                         <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Generation in progress...</p>
-                        <p class="text-[8px] text-slate-500 uppercase tracking-wider">This may take 30-60 seconds</p>
                     </div>
-                    <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl max-h-[500px] rounded-2xl cursor-zoom-in" alt="Generated image">
+                    <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl max-h-[500px] rounded-2xl cursor-zoom-in">
                     <div id="ph" class="text-8xl font-black italic opacity-5 uppercase select-none">Lumina</div>
                     <button id="var-btn" onclick="generateVariation()" class="hidden absolute bottom-6 right-6 bg-black/40 backdrop-blur-xl px-6 py-3 rounded-full text-[10px] font-black uppercase border border-white/10 hover:bg-yellow-500 hover:text-black transition-all">Variation</button>
                 </div>
@@ -314,8 +302,8 @@
                     <div class="flex justify-between items-center border-b border-white/5 pb-3">
                         <h2 class="text-[10px] font-black uppercase tracking-widest text-yellow-500">Session Gallery</h2>
                         <div class="flex gap-3">
-                            <button onclick="downloadZip()" class="text-[9px] font-bold bg-white/5 px-4 py-2 rounded-full uppercase border border-white/10 hover:bg-white/10 transition-colors">Export ZIP</button>
-                            <button onclick="clearG()" class="text-[9px] font-bold text-red-500/50 px-4 py-2 rounded-full uppercase hover:text-red-500 transition-colors">Reset</button>
+                            <button onclick="downloadZip()" class="text-[9px] font-bold bg-white/5 px-4 py-2 rounded-full uppercase border border-white/10">Export ZIP</button>
+                            <button onclick="clearG()" class="text-[9px] font-bold text-red-500/50 px-4 py-2 rounded-full uppercase">Reset</button>
                         </div>
                     </div>
                     <div class="gallery-container-rel">
@@ -334,7 +322,6 @@
         let currentIdx = -1;
         let lastSeed = -1;
         let deleteTargetIdx = -1;
-        let isGenerating = false;
 
         // WELCOME POPUP LOGIC
         window.addEventListener('DOMContentLoaded', () => {
@@ -361,76 +348,40 @@
             document.getElementById('dont-show-welcome').checked = false; 
         }
 
-        function openHelp() { 
-            document.getElementById('help-modal').style.display = 'flex'; 
-            document.body.style.overflow = 'hidden'; 
-        }
-        
-        function closeHelp() { 
-            document.getElementById('help-modal').style.display = 'none'; 
-            document.body.style.overflow = 'auto'; 
-        }
+        function openHelp() { document.getElementById('help-modal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        function closeHelp() { document.getElementById('help-modal').style.display = 'none'; document.body.style.overflow = 'auto'; }
 
         document.getElementById('dl-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             const m = document.getElementById('dl-menu');
             m.style.display = m.style.display === 'block' ? 'none' : 'block';
         });
-        
-        window.addEventListener('click', () => { 
-            document.getElementById('dl-menu').style.display = 'none'; 
-        });
+        window.addEventListener('click', () => { document.getElementById('dl-menu').style.display = 'none'; });
 
         async function checkServer() {
             try {
-                const r = await fetch(API_URL + "/", { method: 'GET' });
-                const s = document.getElementById('server-status');
+                const r = await fetch(API_URL + "/");
                 if(r.ok) {
+                    const s = document.getElementById('server-status');
                     s.innerText = "Online";
                     s.className = "px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 text-[10px] font-bold uppercase tracking-widest";
-                } else {
-                    s.innerText = "Issues";
-                    s.className = "px-4 py-2 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-yellow-500 text-[10px] font-bold uppercase tracking-widest";
                 }
-            } catch(e) {
-                const s = document.getElementById('server-status');
-                s.innerText = "Offline";
-                s.className = "px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest";
-            }
+            } catch(e) {}
         }
         checkServer();
         setInterval(checkServer, 10000);
 
-        function scrollGallery(amt) { 
-            document.getElementById('gallery').scrollBy({ left: amt, behavior: 'smooth' }); 
-        }
+        function scrollGallery(amt) { document.getElementById('gallery').scrollBy({ left: amt, behavior: 'smooth' }); }
 
         async function processAndGenerate(seedToUse = -1) {
-            // Rate limiting
-            if (isGenerating) {
-                console.log('Generation already in progress');
-                return;
-            }
-
-            const promptVal = document.getElementById('prompt').value.trim();
-            if(!promptVal) {
-                alert('Please enter a prompt');
-                return;
-            }
-            
-            isGenerating = true;
-            const genBtn = document.getElementById('gen-btn');
-            genBtn.disabled = true;
-            genBtn.innerText = 'Generating...';
+            const promptVal = document.getElementById('prompt').value;
+            if(!promptVal) return;
             
             const currentParams = {
-                prompt: promptVal, 
-                negative_prompt: document.getElementById('negative').value,
-                style: document.getElementById('style').value, 
-                ratio: document.getElementById('ratio').value,
+                prompt: promptVal, negative_prompt: document.getElementById('negative').value,
+                style: document.getElementById('style').value, ratio: document.getElementById('ratio').value,
                 enhance: document.getElementById('enhance').checked
             };
-            
             document.getElementById('loader').classList.remove('hidden');
             document.getElementById('out-img').classList.add('hidden');
             document.getElementById('ph').classList.add('hidden');
@@ -438,25 +389,100 @@
 
             try {
                 const r = await fetch(`${API_URL}/generate`, {
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'},
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ ...currentParams, seed: seedToUse })
                 });
-                
-                if (!r.ok) {
-                    const errorData = await r.json().catch(() => ({}));
-                    throw new Error(errorData.detail || `Server error: ${r.status}`);
-                }
-                
                 const d = await r.json();
                 lastSeed = d.seed;
                 const bytes = new Uint8Array(d.image.match(/.{1,2}/g).map(b => parseInt(b, 16)));
                 const url = URL.createObjectURL(new Blob([bytes], {type:'image/png'}));
-                
                 document.getElementById('out-img').src = url;
                 document.getElementById('out-img').classList.remove('hidden');
                 document.getElementById('var-btn').classList.remove('hidden');
-                
                 fullHistory.unshift({ ...currentParams, url, seed: d.seed, hex: d.image });
                 renderGallery();
                 document.getElementById('gallery').scrollTo({ left: 0, behavior: 'smooth' });
+            } catch(e) { alert("Server is loading..."); }
+            finally { document.getElementById('loader').classList.add('hidden'); }
+        }
+
+        function renderGallery() {
+            const g = document.getElementById('gallery');
+            g.innerHTML = '';
+            fullHistory.forEach((item, index) => {
+                const cont = document.createElement('div');
+                cont.className = 'gallery-item-container';
+                cont.innerHTML = `<img src="${item.url}" class="gallery-item" onclick="openModal(${index})">`;
+                g.appendChild(cont);
+            });
+        }
+
+        function openModal(index) {
+            if(index < 0 || index >= fullHistory.length) return;
+            currentIdx = index;
+            const item = fullHistory[index];
+            document.getElementById('modal-img').src = item.url;
+            document.getElementById('modal-counter').innerText = `${index + 1} / ${fullHistory.length}`;
+            document.getElementById('modal').style.display = 'block'; 
+            document.body.style.overflow = 'hidden'; 
+            document.getElementById('modal-restore-btn').onclick = (e) => { 
+                e.stopPropagation(); restoreParams(item); closeModal(); 
+            };
+        }
+
+        function closeModal() { 
+            document.getElementById('modal').style.display = 'none'; 
+            document.body.style.overflow = 'auto'; 
+        }
+        function nextImg() { openModal(currentIdx + 1); }
+        function prevImg() { openModal(currentIdx - 1); }
+        function askDeleteCurrent() { if(currentIdx !== -1) { deleteTargetIdx = currentIdx; document.getElementById('confirm-modal').style.display = 'flex'; } }
+        function closeConfirm() { document.getElementById('confirm-modal').style.display = 'none'; }
+        
+        document.getElementById('confirm-yes').onclick = () => {
+            if(deleteTargetIdx === -2) { fullHistory = []; }
+            else if(deleteTargetIdx !== -1) { fullHistory.splice(deleteTargetIdx, 1); closeModal(); }
+            renderGallery(); closeConfirm();
+        };
+
+        function restoreParams(item) {
+            document.getElementById('prompt').value = item.prompt;
+            document.getElementById('negative').value = item.negative_prompt;
+            document.getElementById('style').value = item.style;
+            document.getElementById('ratio').value = item.ratio;
+            document.getElementById('enhance').checked = item.enhance;
+            document.getElementById('out-img').src = item.url;
+            document.getElementById('out-img').classList.remove('hidden');
+            document.getElementById('ph').classList.add('hidden');
+            lastSeed = item.seed;
+        }
+
+        function generateVariation() { if(lastSeed !== -1) processAndGenerate(lastSeed + 1); }
+        async function downloadZip() {
+            const hexes = fullHistory.map(i => i.hex);
+            if(hexes.length === 0) return;
+            const r = await fetch(`${API_URL}/zip`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ images: hexes })
+            });
+            const d = await r.json();
+            const a = document.createElement('a');
+            a.href = "data:application/zip;base64," + d.zip;
+            a.download = "Lumina_Session.zip"; a.click();
+        }
+        function clearG() { if(fullHistory.length > 0) { deleteTargetIdx = -2; document.getElementById('confirm-modal').style.display = 'flex'; } }
+        function downloadFormat(ext) {
+            const item = fullHistory[currentIdx];
+            const canvas = document.createElement('canvas');
+            const img = document.getElementById('modal-img');
+            canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            if(ext === 'jpg') { ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0,0,canvas.width, canvas.height); }
+            ctx.drawImage(img, 0, 0);
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL(`image/${ext === 'jpg' ? 'jpeg' : ext}`, 0.9);
+            a.download = `lumina_${item.seed}.${ext}`; a.click();
+        }
+    </script>
+</body>
+</html>
