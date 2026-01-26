@@ -1,4 +1,5 @@
-LUMINA VISUALS | Technical Overview
+LUMINA VISUALS  Technical Overview
+
 Lumina Visuals is a private AI-powered image generation dashboard. The application is designed to provide a seamless interface for creating high-quality visual content using advanced AI models, specifically optimized for speed and artistic precision.
 
 🖥️ System Architecture
