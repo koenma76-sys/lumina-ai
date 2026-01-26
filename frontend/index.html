@@ -8,17 +8,18 @@
       gtag('js', new Date());
       gtag('config', 'G-786748GW62');
     </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUMINA VISUALS | AI Art Studio</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Lumina Visuals - AI-powered image generation studio using Z Image Turbo. Create stunning AI art in seconds.">
+    <meta name="description" content="Lumina Visuals - AI-powered image generation studio. Create stunning AI art in seconds with Flux.1 Schnell model.">
     <meta property="og:title" content="Lumina Visuals | AI Art Studio">
-    <meta property="og:description" content="Create stunning AI images in seconds with Z Image Turbo">
+    <meta property="og:description" content="Create stunning AI images in seconds with advanced AI models">
     <meta property="og:type" content="website">
+    <meta property="og:image" content="https://lumina-ai-theta.vercel.app/og-image.jpg">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://lumina-ai-theta.vercel.app/og-image.jpg">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -30,7 +31,6 @@
             user-select: none;
         }
         textarea, input { user-select: text; }
-
         .glass { background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(16px); }
         .lumina-btn { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); transition: all 0.3s ease; }
         .lumina-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4); }
@@ -68,7 +68,6 @@
             border-radius: 4px;
             font-size: 10px;
         }
-
         .support-container {
             position: relative;
             margin-top: 1.5rem;
@@ -83,7 +82,6 @@
             border: 1px solid rgba(251, 191, 36, 0.1);
             background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), rgba(2, 6, 23, 0.9));
         }
-
         .donate-btn {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
@@ -104,7 +102,6 @@
             transform: scale(1.05);
             border-color: #29abe0;
         }
-
         .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #fbbf24; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -118,7 +115,6 @@
         .scroll-arrow { position: absolute; z-index: 20; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.1); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; opacity: 0; pointer-events: none; }
         .gallery-container-rel:hover .scroll-arrow { opacity: 1; pointer-events: auto; }
         .arrow-left-g { left: -16px; } .arrow-right-g { right: -16px; }
-
         #modal, #welcome-modal { display: none; position: fixed; inset: 0; z-index: 100; backdrop-filter: blur(20px); background: rgba(0,0,0,0.9); overflow-y: auto; padding: 40px 0; }
         #confirm-modal, #help-modal { display: none; position: fixed; inset: 0; z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(10px); background: rgba(0,0,0,0.85); }
         
@@ -131,16 +127,13 @@
         
         .close-circle { position: fixed; top: 20px; right: 20px; width: 45px; height: 45px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; z-index: 130; font-size: 20px; }
         .close-circle:hover { background: rgba(255, 0, 0, 0.5); }
-
         .download-menu { display: none; position: absolute; bottom: 100%; left: 0; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 8px; z-index: 150; }
         .download-menu button { display: block; width: 100%; padding: 12px 24px; text-align: left; font-size: 10px; font-weight: bold; color: white; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .download-menu button:hover { background: #fbbf24; color: black; }
-
         @media (max-width: 1024px) { .nav-arrow { position: absolute; } .arrow-left { left: 10px; } .arrow-right { right: 10px; } }
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen">
-
     <div id="welcome-modal" class="fixed inset-0 z-[300] flex items-center justify-center p-4">
         <div class="glass p-8 rounded-[2.5rem] border-white/10 max-w-lg w-full space-y-6 shadow-2xl relative">
             <div class="text-center space-y-2">
@@ -152,14 +145,13 @@
                 <p>Lumina Visuals is an AI-powered creative studio designed to turn your text descriptions into high-quality images in seconds.</p>
                 <div class="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
                     <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Model & API</p>
-                    <p class="text-xs">This site uses the <strong>Z Image Turbo</strong> model through the <strong>Evolink.ai</strong> API for fast, high-quality AI image generation.</p>
+                    <p class="text-xs">This site leverages the <strong>Flux.1 Schnell</strong> model through the <strong>Pollinations.ai</strong> API. This allows us to offer a professional-grade generation experience for free.</p>
                 </div>
                 <div class="bg-red-500/5 p-4 rounded-2xl border border-red-500/10 space-y-2">
-                    <p class="text-[10px] font-black uppercase text-red-500 tracking-widest">Beta & Performance</p>
-                    <p class="text-xs italic text-slate-400">As a service in <strong>BETA</strong>, generation times may vary based on API load. Complex images may take 30-60 seconds to generate.</p>
+                    <p class="text-[10px] font-black uppercase text-red-500 tracking-widest">Beta & Limits</p>
+                    <p class="text-xs italic text-slate-400">As a free service in <strong>BETA</strong>, performance depends on the API's current load. You might encounter slower generation times or temporary unavailability during peak hours.</p>
                 </div>
             </div>
-
             <div class="flex flex-col gap-4">
                 <button onclick="closeWelcome()" class="lumina-btn w-full text-black font-black py-4 rounded-2xl uppercase text-[11px] tracking-widest">Enter Studio</button>
                 <label class="flex items-center justify-center gap-2 cursor-pointer opacity-50 hover:opacity-100 transition-opacity">
@@ -169,7 +161,6 @@
             </div>
         </div>
     </div>
-
     <div id="help-modal" onclick="closeHelp()">
         <div class="glass p-8 rounded-[2.5rem] border-white/10 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto space-y-6 shadow-2xl text-left" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center">
@@ -193,7 +184,6 @@
             <button onclick="closeHelp()" class="w-full bg-yellow-500 text-black py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white transition-colors">Got it</button>
         </div>
     </div>
-
     <div id="confirm-modal" onclick="closeConfirm()">
         <div class="glass p-8 rounded-[2rem] border-white/10 max-w-sm w-full text-center space-y-6 shadow-2xl" onclick="event.stopPropagation()">
             <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto text-2xl">✕</div>
@@ -204,7 +194,6 @@
             </div>
         </div>
     </div>
-
     <div id="modal" onclick="closeModal()">
         <div class="close-circle" onclick="closeModal()">✕</div>
         <div class="nav-arrow arrow-left" style="left:20px" onclick="event.stopPropagation(); prevImg()">&#10094;</div>
@@ -212,7 +201,7 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="modal-counter" class="text-[10px] font-black tracking-[0.3em] text-yellow-500 uppercase">0 / 0</div>
             <div class="relative flex items-center justify-center w-full">
-                <img id="modal-img" src="" alt="Generated image">
+                <img id="modal-img" src="" alt="Generated AI artwork">
             </div>
             <div class="flex gap-4 relative pb-10">
                 <button id="modal-restore-btn" class="bg-yellow-500 text-black px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest active:scale-95">Restore</button>
@@ -228,7 +217,6 @@
             </div>
         </div>
     </div>
-
     <div class="max-w-6xl mx-auto space-y-8">
         <header class="flex justify-between items-end border-b border-white/5 pb-6">
             <div>
@@ -252,7 +240,6 @@
             </div>
             <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest">Checking...</div>
         </header>
-
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             <div class="flex flex-col">
                 <div class="glass p-8 rounded-3xl space-y-6 border-white/5">
@@ -285,7 +272,6 @@
                     </label>
                     <button id="gen-btn" onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Generate Vision</button>
                 </div>
-
                 <div class="support-container">
                     <span class="text-[8px] font-black text-yellow-500/50 tracking-[0.5em] mb-4 uppercase">Support Lumina</span>
                     <p class="text-[11px] text-slate-400 font-medium leading-relaxed mb-6">
@@ -297,7 +283,6 @@
                     </a>
                 </div>
             </div>
-
             <div class="lg:col-span-2 space-y-8">
                 <div id="preview-area" class="glass min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden border-white/5">
                     <div id="loader" class="hidden flex flex-col items-center gap-4">
@@ -305,11 +290,10 @@
                         <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Generation in progress...</p>
                         <p class="text-[8px] text-slate-500 uppercase tracking-wider">This may take 30-60 seconds</p>
                     </div>
-                    <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl max-h-[500px] rounded-2xl cursor-zoom-in" alt="Generated image">
+                    <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl max-h-[500px] rounded-2xl cursor-zoom-in" alt="Generated AI artwork">
                     <div id="ph" class="text-8xl font-black italic opacity-5 uppercase select-none">Lumina</div>
                     <button id="var-btn" onclick="generateVariation()" class="hidden absolute bottom-6 right-6 bg-black/40 backdrop-blur-xl px-6 py-3 rounded-full text-[10px] font-black uppercase border border-white/10 hover:bg-yellow-500 hover:text-black transition-all">Variation</button>
                 </div>
-
                 <div class="glass p-6 rounded-3xl space-y-4 border-white/5">
                     <div class="flex justify-between items-center border-b border-white/5 pb-3">
                         <h2 class="text-[10px] font-black uppercase tracking-widest text-yellow-500">Session Gallery</h2>
@@ -327,7 +311,6 @@
             </div>
         </div>
     </div>
-
     <script>
         const API_URL = "https://lumina-ai-l1hs.onrender.com"; 
         let fullHistory = []; 
@@ -335,7 +318,6 @@
         let lastSeed = -1;
         let deleteTargetIdx = -1;
         let isGenerating = false;
-
         // WELCOME POPUP LOGIC
         window.addEventListener('DOMContentLoaded', () => {
             const skipWelcome = localStorage.getItem('lumina_skip_welcome');
@@ -346,7 +328,6 @@
                 document.getElementById('welcome-modal').style.display = 'none';
             }
         });
-
         function closeWelcome() {
             if (document.getElementById('dont-show-welcome').checked) {
                 localStorage.setItem('lumina_skip_welcome', 'true');
@@ -354,13 +335,11 @@
             document.getElementById('welcome-modal').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
-
         function showWelcomeManual() {
             document.getElementById('welcome-modal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
             document.getElementById('dont-show-welcome').checked = false; 
         }
-
         function openHelp() { 
             document.getElementById('help-modal').style.display = 'flex'; 
             document.body.style.overflow = 'hidden'; 
@@ -370,7 +349,6 @@
             document.getElementById('help-modal').style.display = 'none'; 
             document.body.style.overflow = 'auto'; 
         }
-
         document.getElementById('dl-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             const m = document.getElementById('dl-menu');
@@ -380,7 +358,6 @@
         window.addEventListener('click', () => { 
             document.getElementById('dl-menu').style.display = 'none'; 
         });
-
         async function checkServer() {
             try {
                 const r = await fetch(API_URL + "/", { method: 'GET' });
@@ -400,18 +377,15 @@
         }
         checkServer();
         setInterval(checkServer, 10000);
-
         function scrollGallery(amt) { 
             document.getElementById('gallery').scrollBy({ left: amt, behavior: 'smooth' }); 
         }
-
         async function processAndGenerate(seedToUse = -1) {
             // Rate limiting
             if (isGenerating) {
                 console.log('Generation already in progress');
                 return;
             }
-
             const promptVal = document.getElementById('prompt').value.trim();
             if(!promptVal) {
                 alert('Please enter a prompt');
@@ -435,7 +409,6 @@
             document.getElementById('out-img').classList.add('hidden');
             document.getElementById('ph').classList.add('hidden');
             document.getElementById('var-btn').classList.add('hidden');
-
             try {
                 const r = await fetch(`${API_URL}/generate`, {
                     method: 'POST', 
@@ -460,3 +433,188 @@
                 fullHistory.unshift({ ...currentParams, url, seed: d.seed, hex: d.image });
                 renderGallery();
                 document.getElementById('gallery').scrollTo({ left: 0, behavior: 'smooth' });
+            } catch(e) {
+                console.error('Generation error:', e);
+                alert(`Generation failed: ${e.message || 'Unknown error. Please try again.'}`);
+            } finally {
+                document.getElementById('loader').classList.add('hidden');
+                isGenerating = false;
+                genBtn.disabled = false;
+                genBtn.innerText = 'Generate Vision';
+            }
+        }
+        function renderGallery() {
+            const g = document.getElementById('gallery');
+            g.innerHTML = '';
+            fullHistory.forEach((item, index) => {
+                const cont = document.createElement('div');
+                cont.className = 'gallery-item-container';
+                cont.innerHTML = `<img src="${item.url}" class="gallery-item" onclick="openModal(${index})" alt="Generated artwork ${index + 1}">`;
+                g.appendChild(cont);
+            });
+        }
+        function openModal(index) {
+            if(index < 0 || index >= fullHistory.length) return;
+            currentIdx = index;
+            const item = fullHistory[index];
+            document.getElementById('modal-img').src = item.url;
+            document.getElementById('modal-counter').innerText = `${index + 1} / ${fullHistory.length}`;
+            document.getElementById('modal').style.display = 'block'; 
+            document.body.style.overflow = 'hidden'; 
+            document.getElementById('modal-restore-btn').onclick = (e) => { 
+                e.stopPropagation(); restoreParams(item); closeModal(); 
+            };
+        }
+        function closeModal() { 
+            document.getElementById('modal').style.display = 'none'; 
+            document.body.style.overflow = 'auto'; 
+        }
+        
+        function nextImg() { 
+            if(currentIdx < fullHistory.length - 1) {
+                openModal(currentIdx + 1);
+            }
+        }
+        
+        function prevImg() { 
+            if(currentIdx > 0) {
+                openModal(currentIdx - 1);
+            }
+        }
+        
+        function askDeleteCurrent() { 
+            if(currentIdx !== -1) { 
+                deleteTargetIdx = currentIdx; 
+                document.getElementById('confirm-modal').style.display = 'flex'; 
+            } 
+        }
+        
+        function closeConfirm() { 
+            document.getElementById('confirm-modal').style.display = 'none'; 
+            deleteTargetIdx = -1;
+        }
+        
+        document.getElementById('confirm-yes').onclick = () => {
+            if(deleteTargetIdx === -2) { 
+                fullHistory = []; 
+                renderGallery();
+                document.getElementById('out-img').classList.add('hidden');
+                document.getElementById('ph').classList.remove('hidden');
+                document.getElementById('var-btn').classList.add('hidden');
+            }
+            else if(deleteTargetIdx !== -1) { 
+                fullHistory.splice(deleteTargetIdx, 1); 
+                if(currentIdx >= fullHistory.length) {
+                    currentIdx = fullHistory.length - 1;
+                }
+                if(fullHistory.length > 0 && currentIdx >= 0) {
+                    openModal(currentIdx);
+                } else {
+                    closeModal();
+                }
+                renderGallery();
+            }
+            closeConfirm();
+        };
+        function restoreParams(item) {
+            document.getElementById('prompt').value = item.prompt;
+            document.getElementById('negative').value = item.negative_prompt;
+            document.getElementById('style').value = item.style;
+            document.getElementById('ratio').value = item.ratio;
+            document.getElementById('enhance').checked = item.enhance;
+            if(item.url) {
+                document.getElementById('out-img').src = item.url;
+                document.getElementById('out-img').classList.remove('hidden');
+                document.getElementById('ph').classList.add('hidden');
+                lastSeed = item.seed;
+                document.getElementById('var-btn').classList.remove('hidden');
+            }
+        }
+        function generateVariation() { 
+            if(lastSeed !== -1) { 
+                processAndGenerate(lastSeed + 1); 
+            } else {
+                alert('No previous generation to create variation from');
+            }
+        }
+        
+        async function downloadZip() {
+            const hexes = fullHistory.map(i => i.hex);
+            if(hexes.length === 0) {
+                alert('No images to export');
+                return;
+            }
+            
+            try {
+                const r = await fetch(`${API_URL}/zip`, {
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ images: hexes })
+                });
+                
+                if (!r.ok) {
+                    throw new Error(`Export failed: ${r.status}`);
+                }
+                
+                const d = await r.json();
+                const a = document.createElement('a');
+                a.href = "data:application/zip;base64," + d.zip;
+                a.download = "Lumina_Session.zip"; 
+                a.click();
+            } catch(e) {
+                console.error('Zip export error:', e);
+                alert('Failed to export ZIP. Please try again.');
+            }
+        }
+        
+        function clearG() { 
+            if(fullHistory.length > 0) { 
+                deleteTargetIdx = -2; 
+                document.getElementById('confirm-modal').style.display = 'flex'; 
+            } else {
+                alert('Gallery is already empty');
+            }
+        }
+        
+        function downloadFormat(ext) {
+            const item = fullHistory[currentIdx];
+            if(!item) return;
+            
+            const canvas = document.createElement('canvas');
+            const img = document.getElementById('modal-img');
+            
+            img.onload = function() {
+                canvas.width = img.naturalWidth; 
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext('2d');
+                
+                if(ext === 'jpg') { 
+                    ctx.fillStyle = "#FFFFFF"; 
+                    ctx.fillRect(0,0,canvas.width, canvas.height); 
+                }
+                
+                ctx.drawImage(img, 0, 0);
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL(`image/${ext === 'jpg' ? 'jpeg' : ext}`, 0.9);
+                a.download = `lumina_${item.seed}.${ext}`; 
+                a.click();
+            };
+            
+            // Force reload if needed
+            if(img.complete) {
+                img.onload();
+            } else {
+                img.src = img.src;
+            }
+        }
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if(document.getElementById('modal').style.display === 'block') {
+                if(e.key === 'Escape') closeModal();
+                if(e.key === 'ArrowRight') nextImg();
+                if(e.key === 'ArrowLeft') prevImg();
+            }
+        });
+    </script>
+</body>
+</html>
