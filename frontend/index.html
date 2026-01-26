@@ -14,10 +14,11 @@
     
     <meta name="description" content="Lumina Visuals - AI-powered image generation studio. Create stunning AI art in seconds with Z-Image-Turbo.">
     <meta property="og:title" content="Lumina Visuals | AI Art Studio">
-    <meta property="og:description" content="Create stunning AI images in seconds with high-performance AI models">
+    <meta property="og:description" content="Create stunning AI images in seconds with advanced AI models">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://lumina-ai-theta.vercel.app/og-image.jpg">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://lumina-ai-theta.vercel.app/og-image.jpg">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -117,6 +118,7 @@
         #confirm-modal, #help-modal { display: none; position: fixed; inset: 0; z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(10px); background: rgba(0,0,0,0.85); }
         
         .modal-content { width: 90%; max-width: 1400px; margin: 0 auto; position: relative; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+        
         #modal-img { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 12px; max-width: 100%; height: auto; display: block; }
         
         .nav-arrow { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.05); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; z-index: 120; border: 1px solid rgba(255,255,255,0.1); transition: 0.2s; }
@@ -134,19 +136,19 @@
     <div id="welcome-modal" class="fixed inset-0 z-[300] flex items-center justify-center p-4">
         <div class="glass p-8 rounded-[2.5rem] border-white/10 max-w-lg w-full space-y-6 shadow-2xl relative">
             <div class="text-center space-y-2">
-                <div class="text-yellow-500 font-black text-xs uppercase tracking-[0.3em]">About</div>
+                <div class="text-yellow-500 font-black text-xs uppercase tracking-[0.3em]">Welcome to</div>
                 <h2 class="text-3xl font-black text-white tracking-tighter uppercase">Lumina Visuals</h2>
             </div>
             
             <div class="space-y-4 text-slate-300 text-sm leading-relaxed">
-                <p>Lumina Visuals is a private, high-performance AI studio built for instant creative visualization.</p>
+                <p>Lumina Visuals is an AI-powered creative studio designed to turn your text descriptions into high-quality images in seconds.</p>
                 <div class="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
-                    <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Core Technology</p>
-                    <p class="text-xs">This studio utilizes the ultra-fast <strong>Z-Image-Turbo</strong> engine powered by <strong>Evolink.ai</strong>. This ensures high-fidelity results with significantly reduced generation times.</p>
+                    <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Model & API</p>
+                    <p class="text-xs">This studio leverages the <strong>Z-Image-Turbo</strong> model through the <strong>Evolink.ai</strong> API. This allows us to offer a professional-grade generation experience with maximum speed.</p>
                 </div>
-                <div class="bg-yellow-500/5 p-4 rounded-2xl border border-yellow-500/10 space-y-2">
-                    <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Privacy & Performance</p>
-                    <p class="text-xs italic text-slate-400">All generations are processed through a secure backend to protect API integrity. The system is optimized for personal use, providing professional-grade tools for artistic exploration.</p>
+                <div class="bg-red-500/5 p-4 rounded-2xl border border-red-500/10 space-y-2">
+                    <p class="text-[10px] font-black uppercase text-red-500 tracking-widest">Beta & Performance</p>
+                    <p class="text-xs italic text-slate-400">As a service in <strong>BETA</strong>, performance is optimized for high-speed delivery. Please ensure your prompts are in English for the best results.</p>
                 </div>
             </div>
             <div class="flex flex-col gap-4">
@@ -158,51 +160,50 @@
             </div>
         </div>
     </div>
-
     <div id="help-modal" onclick="closeHelp()">
         <div class="glass p-8 rounded-[2.5rem] border-white/10 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto space-y-6 shadow-2xl text-left" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center">
-                <h3 class="text-xl font-black uppercase tracking-tighter text-yellow-500">Studio Guide</h3>
+                <h3 class="text-xl font-black uppercase tracking-tighter text-yellow-500">How to use Lumina</h3>
                 <button onclick="closeHelp()" class="text-slate-500 hover:text-white">✕</button>
             </div>
             <div class="space-y-4 text-sm leading-relaxed text-slate-300">
                 <section>
                     <h4 class="font-black text-white uppercase text-[10px] tracking-widest mb-1">1. Prompting</h4>
-                    <p>Describe your vision clearly in English. Detailed prompts yield better Turbo results.</p>
+                    <p>Enter descriptions in English. Use the **Negative Prompt** to exclude things like "text, watermark, low quality".</p>
                 </section>
                 <section>
-                    <h4 class="font-black text-white uppercase text-[10px] tracking-widest mb-1">2. Turbo Styles</h4>
-                    <p>Select a style preset to instantly recalibrate the AI for photorealism, anime, or classical art.</p>
+                    <h4 class="font-black text-white uppercase text-[10px] tracking-widest mb-1">2. Styles & Ratios</h4>
+                    <p>Choose an artistic **Style** and the **Ratio** (1:1, 16:9, or 9:16).</p>
                 </section>
                 <section>
                     <h4 class="font-black text-white uppercase text-[10px] tracking-widest mb-1">3. Vivid Mode</h4>
-                    <p>Activate to enhance color saturation and cinematic lighting depth.</p>
+                    <p>Enhances contrast and color saturation for more striking results.</p>
                 </section>
             </div>
-            <button onclick="closeHelp()" class="w-full bg-yellow-500 text-black py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white transition-colors">Return to Canvas</button>
+            <button onclick="closeHelp()" class="w-full bg-yellow-500 text-black py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white transition-colors">Got it</button>
         </div>
     </div>
-
     <div id="confirm-modal" onclick="closeConfirm()">
         <div class="glass p-8 rounded-[2rem] border-white/10 max-w-sm w-full text-center space-y-6 shadow-2xl" onclick="event.stopPropagation()">
             <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto text-2xl">✕</div>
-            <h3 class="text-lg font-black uppercase tracking-tighter">Delete Image?</h3>
+            <h3 class="text-lg font-black uppercase tracking-tighter">Delete?</h3>
             <div class="flex flex-col gap-3">
-                <button id="confirm-yes" class="bg-red-500 text-white font-black py-4 rounded-2xl uppercase text-[10px] tracking-widest">Confirm</button>
-                <button onclick="closeConfirm()" class="bg-white/5 text-slate-400 font-bold py-4 rounded-2xl uppercase text-[10px] tracking-widest">Cancel</button>
+                <button id="confirm-yes" class="bg-red-500 text-white font-black py-4 rounded-2xl uppercase text-[10px] tracking-widest hover:bg-red-600 transition-colors">Confirm</button>
+                <button onclick="closeConfirm()" class="bg-white/5 text-slate-400 font-bold py-4 rounded-2xl uppercase text-[10px] tracking-widest hover:bg-white/10 transition-colors">Cancel</button>
             </div>
         </div>
     </div>
-
     <div id="modal" onclick="closeModal()">
         <div class="close-circle" onclick="closeModal()">✕</div>
         <div class="nav-arrow arrow-left" style="left:20px" onclick="event.stopPropagation(); prevImg()">&#10094;</div>
         <div class="nav-arrow arrow-right" style="right:20px" onclick="event.stopPropagation(); nextImg()">&#10095;</div>
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="modal-counter" class="text-[10px] font-black tracking-[0.3em] text-yellow-500 uppercase">0 / 0</div>
-            <img id="modal-img" src="" alt="Lumina Generated Art">
+            <div class="relative flex items-center justify-center w-full">
+                <img id="modal-img" src="" alt="Generated AI artwork">
+            </div>
             <div class="flex gap-4 relative pb-10">
-                <button id="modal-restore-btn" class="bg-yellow-500 text-black px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest">Restore</button>
+                <button id="modal-restore-btn" class="bg-yellow-500 text-black px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest active:scale-95">Restore</button>
                 <div class="relative">
                     <button id="dl-btn" class="bg-white/10 text-white px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest border border-white/10">Download</button>
                     <div id="dl-menu" class="download-menu shadow-2xl">
@@ -215,13 +216,12 @@
             </div>
         </div>
     </div>
-
     <div class="max-w-6xl mx-auto space-y-8">
         <header class="flex justify-between items-end border-b border-white/5 pb-6">
             <div>
                 <div class="flex items-center gap-3">
                     <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase">LUMINA VISUALS</h1>
-                    <span class="text-[10px] font-black text-white/20 tracking-widest uppercase mt-2">TURBO</span>
+                    <span class="text-[10px] font-black text-white/20 tracking-widest uppercase mt-2">BETA</span>
                 </div>
                 <div class="flex items-center gap-4 mt-2">
                     <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em]">Vivid Visions Crafted</p>
@@ -239,17 +239,16 @@
             </div>
             <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest">Checking...</div>
         </header>
-
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             <div class="flex flex-col">
                 <div class="glass p-8 rounded-3xl space-y-6 border-white/5">
                     <div class="space-y-2">
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prompt</label>
-                        <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm" rows="4" placeholder="Describe your masterpiece..."></textarea>
+                        <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm" rows="4" placeholder="Enter your vision..."></textarea>
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-bold text-red-500/40 uppercase tracking-widest">Negative Prompt</label>
-                        <textarea id="negative" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-3 text-white text-xs" rows="2" placeholder="Elements to exclude..."></textarea>
+                        <textarea id="negative" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-3 text-white text-xs" rows="2" placeholder="Elements to avoid..."></textarea>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <select id="style" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
@@ -272,17 +271,17 @@
                     </label>
                     <button id="gen-btn" onclick="processAndGenerate()" class="lumina-btn w-full text-black font-black py-5 rounded-2xl uppercase text-sm tracking-widest">Generate Vision</button>
                 </div>
-                
                 <div class="support-container">
                     <span class="text-[8px] font-black text-yellow-500/50 tracking-[0.5em] mb-4 uppercase">Support Lumina</span>
-                    <p class="text-[11px] text-slate-400 font-medium leading-relaxed mb-6">Support server costs and the development of this private AI tool.</p>
+                    <p class="text-[11px] text-slate-400 font-medium leading-relaxed mb-6">
+                        Help us keep the servers running and improve the artificial intelligence.
+                    </p>
                     <a href="https://ko-fi.com/luminaai" target="_blank" class="donate-btn">
                         <span>💙</span>
-                        <span class="text-[10px] font-black uppercase tracking-widest">Ko-fi Support</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest">Support on Ko-fi</span>
                     </a>
                 </div>
             </div>
-
             <div class="lg:col-span-2 space-y-8">
                 <div id="preview-area" class="glass min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden border-white/5">
                     <div id="loader" class="hidden flex flex-col items-center gap-4">
@@ -290,17 +289,16 @@
                         <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Generation in progress...</p>
                         <p class="text-[8px] text-slate-500 uppercase tracking-wider">Harnessing Z-Image-Turbo engine</p>
                     </div>
-                    <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl max-h-[500px] rounded-2xl cursor-zoom-in" alt="AI Artwork">
+                    <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl max-h-[500px] rounded-2xl cursor-zoom-in" alt="Generated AI artwork">
                     <div id="ph" class="text-8xl font-black italic opacity-5 uppercase select-none">Lumina</div>
                     <button id="var-btn" onclick="generateVariation()" class="hidden absolute bottom-6 right-6 bg-black/40 backdrop-blur-xl px-6 py-3 rounded-full text-[10px] font-black uppercase border border-white/10 hover:bg-yellow-500 hover:text-black transition-all">Variation</button>
                 </div>
-
                 <div class="glass p-6 rounded-3xl space-y-4 border-white/5">
                     <div class="flex justify-between items-center border-b border-white/5 pb-3">
-                        <h2 class="text-[10px] font-black uppercase tracking-widest text-yellow-500">Session Archive</h2>
+                        <h2 class="text-[10px] font-black uppercase tracking-widest text-yellow-500">Session Gallery</h2>
                         <div class="flex gap-3">
-                            <button onclick="downloadZip()" class="text-[9px] font-bold bg-white/5 px-4 py-2 rounded-full uppercase border border-white/10">Export ZIP</button>
-                            <button onclick="clearG()" class="text-[9px] font-bold text-red-500/50 px-4 py-2 rounded-full uppercase">Reset</button>
+                            <button onclick="downloadZip()" class="text-[9px] font-bold bg-white/5 px-4 py-2 rounded-full uppercase border border-white/10 hover:bg-white/10 transition-colors">Export ZIP</button>
+                            <button onclick="clearG()" class="text-[9px] font-bold text-red-500/50 px-4 py-2 rounded-full uppercase hover:text-red-500 transition-colors">Reset</button>
                         </div>
                     </div>
                     <div class="gallery-container-rel">
@@ -312,24 +310,23 @@
             </div>
         </div>
     </div>
-
     <script>
-        // Use your Render URL here
         const API_URL = "https://lumina-ai-l1hs.onrender.com"; 
         let fullHistory = []; 
         let currentIdx = -1;
         let lastSeed = -1;
         let deleteTargetIdx = -1;
         let isGenerating = false;
-
+        // WELCOME POPUP LOGIC
         window.addEventListener('DOMContentLoaded', () => {
             const skipWelcome = localStorage.getItem('lumina_skip_welcome');
             if (!skipWelcome) {
                 document.getElementById('welcome-modal').style.display = 'flex';
                 document.body.style.overflow = 'hidden';
+            } else {
+                document.getElementById('welcome-modal').style.display = 'none';
             }
         });
-
         function closeWelcome() {
             if (document.getElementById('dont-show-welcome').checked) {
                 localStorage.setItem('lumina_skip_welcome', 'true');
@@ -337,13 +334,11 @@
             document.getElementById('welcome-modal').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
-
         function showWelcomeManual() {
             document.getElementById('welcome-modal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
             document.getElementById('dont-show-welcome').checked = false; 
         }
-
         function openHelp() { 
             document.getElementById('help-modal').style.display = 'flex'; 
             document.body.style.overflow = 'hidden'; 
@@ -353,7 +348,6 @@
             document.getElementById('help-modal').style.display = 'none'; 
             document.body.style.overflow = 'auto'; 
         }
-
         document.getElementById('dl-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             const m = document.getElementById('dl-menu');
@@ -363,37 +357,43 @@
         window.addEventListener('click', () => { 
             document.getElementById('dl-menu').style.display = 'none'; 
         });
-
         async function checkServer() {
             try {
                 const r = await fetch(API_URL + "/", { method: 'GET' });
                 const s = document.getElementById('server-status');
                 if(r.ok) {
-                    s.innerText = "Studio Online";
+                    s.innerText = "Online";
                     s.className = "px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 text-[10px] font-bold uppercase tracking-widest";
+                } else {
+                    s.innerText = "Issues";
+                    s.className = "px-4 py-2 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-yellow-500 text-[10px] font-bold uppercase tracking-widest";
                 }
             } catch(e) {
                 const s = document.getElementById('server-status');
-                s.innerText = "Studio Offline";
+                s.innerText = "Offline";
                 s.className = "px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest";
             }
         }
         checkServer();
-        setInterval(checkServer, 15000);
-
+        setInterval(checkServer, 10000);
         function scrollGallery(amt) { 
             document.getElementById('gallery').scrollBy({ left: amt, behavior: 'smooth' }); 
         }
-
         async function processAndGenerate(seedToUse = -1) {
-            if (isGenerating) return;
+            if (isGenerating) {
+                console.log('Generation already in progress');
+                return;
+            }
             const promptVal = document.getElementById('prompt').value.trim();
-            if(!promptVal) return alert('Enter a prompt');
+            if(!promptVal) {
+                alert('Please enter a prompt');
+                return;
+            }
             
             isGenerating = true;
             const genBtn = document.getElementById('gen-btn');
             genBtn.disabled = true;
-            genBtn.innerText = 'Engaging Turbo Engine...';
+            genBtn.innerText = 'Generating...';
             
             const currentParams = {
                 prompt: promptVal, 
@@ -407,7 +407,6 @@
             document.getElementById('out-img').classList.add('hidden');
             document.getElementById('ph').classList.add('hidden');
             document.getElementById('var-btn').classList.add('hidden');
-
             try {
                 const r = await fetch(`${API_URL}/generate`, {
                     method: 'POST', 
@@ -415,12 +414,13 @@
                     body: JSON.stringify({ ...currentParams, seed: seedToUse })
                 });
                 
-                if (!r.ok) throw new Error(`Engine Error: ${r.status}`);
+                if (!r.ok) {
+                    const errorData = await r.json().catch(() => ({}));
+                    throw new Error(errorData.detail || `Server error: ${r.status}`);
+                }
                 
                 const d = await r.json();
                 lastSeed = d.seed;
-                
-                // Convert HEX to image
                 const bytes = new Uint8Array(d.image.match(/.{1,2}/g).map(b => parseInt(b, 16)));
                 const url = URL.createObjectURL(new Blob([bytes], {type:'image/png'}));
                 
@@ -430,8 +430,10 @@
                 
                 fullHistory.unshift({ ...currentParams, url, seed: d.seed, hex: d.image });
                 renderGallery();
+                document.getElementById('gallery').scrollTo({ left: 0, behavior: 'smooth' });
             } catch(e) {
-                alert(`Generation failed: ${e.message}`);
+                console.error('Generation error:', e);
+                alert(`Generation failed: ${e.message || 'Unknown error. Please try again.'}`);
             } finally {
                 document.getElementById('loader').classList.add('hidden');
                 isGenerating = false;
@@ -439,18 +441,16 @@
                 genBtn.innerText = 'Generate Vision';
             }
         }
-
         function renderGallery() {
             const g = document.getElementById('gallery');
             g.innerHTML = '';
             fullHistory.forEach((item, index) => {
                 const cont = document.createElement('div');
                 cont.className = 'gallery-item-container';
-                cont.innerHTML = `<img src="${item.url}" class="gallery-item" onclick="openModal(${index})" alt="Gallery Artwork">`;
+                cont.innerHTML = `<img src="${item.url}" class="gallery-item" onclick="openModal(${index})" alt="Generated artwork ${index + 1}">`;
                 g.appendChild(cont);
             });
         }
-
         function openModal(index) {
             if(index < 0 || index >= fullHistory.length) return;
             currentIdx = index;
@@ -459,15 +459,26 @@
             document.getElementById('modal-counter').innerText = `${index + 1} / ${fullHistory.length}`;
             document.getElementById('modal').style.display = 'block'; 
             document.body.style.overflow = 'hidden'; 
+            document.getElementById('modal-restore-btn').onclick = (e) => { 
+                e.stopPropagation(); restoreParams(item); closeModal(); 
+            };
         }
-
         function closeModal() { 
             document.getElementById('modal').style.display = 'none'; 
             document.body.style.overflow = 'auto'; 
         }
         
-        function nextImg() { if(currentIdx < fullHistory.length - 1) openModal(currentIdx + 1); }
-        function prevImg() { if(currentIdx > 0) openModal(currentIdx - 1); }
+        function nextImg() { 
+            if(currentIdx < fullHistory.length - 1) {
+                openModal(currentIdx + 1);
+            }
+        }
+        
+        function prevImg() { 
+            if(currentIdx > 0) {
+                openModal(currentIdx - 1);
+            }
+        }
         
         function askDeleteCurrent() { 
             if(currentIdx !== -1) { 
@@ -478,29 +489,59 @@
         
         function closeConfirm() { 
             document.getElementById('confirm-modal').style.display = 'none'; 
+            deleteTargetIdx = -1;
         }
         
         document.getElementById('confirm-yes').onclick = () => {
-            if(deleteTargetIdx !== -1) { 
-                fullHistory.splice(deleteTargetIdx, 1); 
+            if(deleteTargetIdx === -2) { 
+                fullHistory = []; 
                 renderGallery();
-                closeModal();
+                document.getElementById('out-img').classList.add('hidden');
+                document.getElementById('ph').classList.remove('hidden');
+                document.getElementById('var-btn').classList.add('hidden');
+            }
+            else if(deleteTargetIdx !== -1) { 
+                fullHistory.splice(deleteTargetIdx, 1); 
+                if(currentIdx >= fullHistory.length) {
+                    currentIdx = fullHistory.length - 1;
+                }
+                if(fullHistory.length > 0 && currentIdx >= 0) {
+                    openModal(currentIdx);
+                } else {
+                    closeModal();
+                }
+                renderGallery();
             }
             closeConfirm();
         };
-
         function restoreParams(item) {
             document.getElementById('prompt').value = item.prompt;
+            document.getElementById('negative').value = item.negative_prompt;
             document.getElementById('style').value = item.style;
             document.getElementById('ratio').value = item.ratio;
+            document.getElementById('enhance').checked = item.enhance;
+            if(item.url) {
+                document.getElementById('out-img').src = item.url;
+                document.getElementById('out-img').classList.remove('hidden');
+                document.getElementById('ph').classList.add('hidden');
+                lastSeed = item.seed;
+                document.getElementById('var-btn').classList.remove('hidden');
+            }
         }
-
-        function generateVariation() { if(lastSeed !== -1) processAndGenerate(lastSeed + 1); }
-
+        function generateVariation() { 
+            if(lastSeed !== -1) { 
+                processAndGenerate(lastSeed + 1); 
+            } else {
+                alert('No previous generation to create variation from');
+            }
+        }
+        
         async function downloadZip() {
             const hexes = fullHistory.map(i => i.hex);
-            if(hexes.length === 0) return alert('No images to export');
-            
+            if(hexes.length === 0) {
+                alert('No images to export');
+                return;
+            }
             try {
                 const r = await fetch(`${API_URL}/zip`, {
                     method: 'POST',
@@ -512,7 +553,9 @@
                 link.href = `data:application/zip;base64,${d.zip}`;
                 link.download = `lumina_session_${Date.now()}.zip`;
                 link.click();
-            } catch(e) { alert('ZIP export failed'); }
+            } catch(e) {
+                alert('ZIP export failed');
+            }
         }
 
         function downloadFormat(ext) {
@@ -524,12 +567,8 @@
         }
 
         function clearG() {
-            if(confirm('Clear all session images?')) {
-                fullHistory = [];
-                renderGallery();
-                document.getElementById('out-img').classList.add('hidden');
-                document.getElementById('ph').classList.remove('hidden');
-            }
+            deleteTargetIdx = -2;
+            document.getElementById('confirm-modal').style.display = 'flex';
         }
     </script>
 </body>
