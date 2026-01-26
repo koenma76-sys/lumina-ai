@@ -41,7 +41,7 @@ def keep_alive():
     server_url = "http://0.0.0.0:" + os.environ.get("PORT", "8000")
     while True:
         try:
-            requests.get(server_url)
+            requests.get(server_url, timeout=5)
         except:
             pass
         time.sleep(600)
@@ -56,6 +56,9 @@ class GenRequest(BaseModel):
     seed: int = -1
     ratio: str = "1:1"
     enhance: bool = False
+
+class ZipRequest(BaseModel):
+    images: list[str]
 
 @app.get("/")
 async def health_check():
@@ -111,12 +114,12 @@ async def generate(data: GenRequest):
         "Content-Type": "application/json"
     }
 
-    # Payload corretto per Z Image Turbo (usa "size" invece di width/height)
+    # Payload corretto per Z Image Turbo
     payload = {
         "model": "z-image-turbo",
         "prompt": final_prompt,
         "negative_prompt": full_neg,
-        "size": data.ratio,  # "1:1", "16:9", "9:16"
+        "size": data.ratio,
         "seed": current_seed,
         "n": 1
     }
@@ -124,8 +127,8 @@ async def generate(data: GenRequest):
     logger.info(f"Calling Evolink API with seed: {current_seed}, ratio: {data.ratio}")
     
     try:
-        # Chiamata all'API
-        r = requests.post(EVOLINK_API_URL, headers=headers, json=payload, timeout=90)
+        # Chiamata all'API (timeout ridotto a 30s per chiamata iniziale)
+        r = requests.post(EVOLINK_API_URL, headers=headers, json=payload, timeout=30)
         
         logger.info(f"API Response Status: {r.status_code}")
         
@@ -136,7 +139,6 @@ async def generate(data: GenRequest):
         
         response_data = r.json()
         logger.info(f"API Response keys: {list(response_data.keys())}")
-        logger.info(f"Full API Response: {response_data}")
         
         # CASO 1: Risposta sincrona con immagine diretta
         if "data" in response_data and len(response_data["data"]) > 0:
@@ -165,18 +167,16 @@ async def generate(data: GenRequest):
             task_id = response_data["id"]
             logger.info(f"Async task created: {task_id}, initial status: {response_data['status']}")
             
-            
-            # Polling del task
-            # Step 2: Polling per ottenere il risultato con backoff
-            max_attempts = 120  # 120 tentativi = fino a 2 minuti
-            wait_time = 0.5  # Inizia con 0.5 secondi
+            # Polling del task con backoff esponenziale
+            max_attempts = 120
+            wait_time = 0.5
             
             for attempt in range(max_attempts):
                 time.sleep(wait_time)
                 
-                # Aumenta gradualmente il tempo di attesa (backoff esponenziale)
+                # Backoff esponenziale dopo 10 tentativi
                 if attempt > 10:
-                    wait_time = min(2.0, wait_time * 1.1)  # Max 2 secondi
+                    wait_time = min(2.0, wait_time * 1.1)
                 
                 # Query del task
                 task_url = f"https://api.evolink.ai/v1/tasks/{task_id}"
@@ -187,45 +187,49 @@ async def generate(data: GenRequest):
                     current_status = task_data.get('status')
                     logger.info(f"Task status: {current_status}, attempt {attempt+1}")
                     
-                    # Se completato (può essere "succeeded" o "completed")
+                    # Se completato
                     if current_status in ["succeeded", "completed"]:
                         logger.info(f"Task finished! Full task_data: {task_data}")
                         
-                        # Prova diversi formati di risposta possibili
                         image_url = None
                         b64_data = None
                         
-                        # Formato 1: results array (Z Image Turbo usa questo!)
+                        # Formato 1: results array (Z Image Turbo)
                         if "results" in task_data and isinstance(task_data["results"], list) and len(task_data["results"]) > 0:
-                            image_url = task_data["results"][0] if isinstance(task_data["results"][0], str) else task_data["results"][0].get("url")
+                            result_item = task_data["results"][0]
+                            if isinstance(result_item, str):
+                                image_url = result_item
+                            elif isinstance(result_item, dict):
+                                image_url = result_item.get("url")
+                            else:
+                                logger.warning(f"Unexpected result type: {type(result_item)}")
                             logger.info(f"✅ Found image URL in results[0]: {image_url}")
                         
-                        # Formato 2: data array con url
+                        # Formato 2: data array
                         elif "data" in task_data and isinstance(task_data["data"], list) and len(task_data["data"]) > 0:
                             first_item = task_data["data"][0]
                             image_url = first_item.get("url")
                             b64_data = first_item.get("b64_json")
                             logger.info(f"Found in data array: url={image_url}, b64={bool(b64_data)}")
                         
-                        # Formato 3: data object con url/b64
+                        # Formato 3: data object
                         elif "data" in task_data and isinstance(task_data["data"], dict):
                             image_url = task_data["data"].get("url")
                             b64_data = task_data["data"].get("b64_json")
                             logger.info(f"Found in data object: url={image_url}, b64={bool(b64_data)}")
                         
-                        # Formato 4: url diretto nel task
+                        # Formato 4: url diretto
                         elif "url" in task_data:
                             image_url = task_data["url"]
                             logger.info(f"Found direct url: {image_url}")
                         
                         # Formato 5: result object
-                        elif "result" in task_data:
-                            if isinstance(task_data["result"], dict):
-                                image_url = task_data["result"].get("url")
-                                b64_data = task_data["result"].get("b64_json")
-                                logger.info(f"Found in result: url={image_url}, b64={bool(b64_data)}")
+                        elif "result" in task_data and isinstance(task_data["result"], dict):
+                            image_url = task_data["result"].get("url")
+                            b64_data = task_data["result"].get("b64_json")
+                            logger.info(f"Found in result: url={image_url}, b64={bool(b64_data)}")
                         
-                        # Prova prima b64 se disponibile
+                        # Prova base64 se disponibile
                         if b64_data:
                             logger.info(f"Processing base64 data")
                             try:
@@ -236,58 +240,75 @@ async def generate(data: GenRequest):
                             except Exception as e:
                                 logger.error(f"Failed to decode b64: {e}")
                         
-                        # Altrimenti prova URL
+                        # Prova URL
                         if image_url:
                             logger.info(f"Downloading image from URL: {image_url}")
                             img_response = requests.get(image_url, timeout=30)
                             if img_response.status_code == 200:
                                 hex_image = img_response.content.hex()
-                                logger.info(f"✅ Successfully downloaded and converted, hex length: {len(hex_image)}")
+                                logger.info(f"✅ Successfully downloaded, hex length: {len(hex_image)}")
                                 return {"image": hex_image, "seed": current_seed}
                             else:
-                                logger.error(f"Failed to download image, status: {img_response.status_code}")
+                                logger.error(f"Failed to download, status: {img_response.status_code}")
                                 raise HTTPException(status_code=500, detail=f"Failed to download image: HTTP {img_response.status_code}")
                         
-                        # Se arriviamo qui, nessun URL/b64 trovato
-                        logger.error(f"❌ No image URL or b64 found. Task data keys: {list(task_data.keys())}")
-                        raise HTTPException(status_code=500, detail=f"Image URL not found in response: {task_data}")
+                        # Nessun dato trovato
+                        logger.error(f"❌ No image URL or b64 found. Keys: {list(task_data.keys())}")
+                        raise HTTPException(status_code=500, detail=f"Image data not found in completed task")
                     
                     # Se fallito
-                    elif task_data.get("status") in ["failed", "canceled"]:
+                    elif current_status in ["failed", "canceled"]:
                         error_msg = task_data.get("error", "Unknown error")
+                        logger.error(f"Task failed: {error_msg}")
                         raise HTTPException(status_code=500, detail=f"Task failed: {error_msg}")
             
-            
-            # Timeout dopo polling
+            # Timeout polling
             logger.error("Task polling timeout after 120 attempts")
-            raise HTTPException(status_code=504, detail="Task timeout - image generation took too long (>2 minutes)")
+            raise HTTPException(status_code=504, detail="Image generation timeout (>2 minutes)")
         
         # CASO 3: Formato non riconosciuto
         logger.error(f"Unexpected response format: {response_data}")
-        raise HTTPException(status_code=500, detail=f"Unexpected API response format. Keys: {list(response_data.keys())}")
+        raise HTTPException(status_code=500, detail=f"Unexpected API response format")
             
     except requests.exceptions.Timeout:
         logger.error("Request timeout")
-        raise HTTPException(status_code=504, detail="Request timeout")
+        raise HTTPException(status_code=504, detail="API request timeout")
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Exception: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
 @app.post("/zip")
-async def make_zip(data: dict):
-    imgs = data.get("images", [])
+async def make_zip(data: ZipRequest):
+    # Validazione input
+    if not data.images:
+        raise HTTPException(status_code=400, detail="No images provided")
+    
+    if len(data.images) > 100:
+        raise HTTPException(status_code=400, detail="Maximum 100 images per ZIP")
+    
+    logger.info(f"Creating ZIP with {len(data.images)} images")
+    
     buf = io.BytesIO()
+    successful = 0
+    
     with ZipFile(buf, "w", ZIP_DEFLATED) as f:
-        for i, hex_data in enumerate(imgs):
+        for i, hex_data in enumerate(data.images):
             try:
                 img_data = base64.b16decode(hex_data.upper())
-                f.writestr(f"lumina_art_{i}.png", img_data)
-            except: 
+                f.writestr(f"lumina_art_{i+1}.png", img_data)
+                successful += 1
+            except Exception as e:
+                logger.warning(f"Failed to add image {i} to ZIP: {e}")
                 continue
+    
+    if successful == 0:
+        raise HTTPException(status_code=400, detail="No valid images to ZIP")
+    
     buf.seek(0)
-    return {"zip": base64.b64encode(buf.getvalue()).decode()}
+    logger.info(f"ZIP created successfully with {successful}/{len(data.images)} images")
+    return {"zip": base64.b64encode(buf.getvalue()).decode(), "count": successful}
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
