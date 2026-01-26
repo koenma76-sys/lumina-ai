@@ -129,7 +129,57 @@
         .download-menu { display: none; position: absolute; bottom: 100%; left: 0; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 8px; z-index: 150; }
         .download-menu button { display: block; width: 100%; padding: 12px 24px; text-align: left; font-size: 10px; font-weight: bold; color: white; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .download-menu button:hover { background: #fbbf24; color: black; }
-        @media (max-width: 1024px) { .nav-arrow { position: absolute; } .arrow-left { left: 10px; } .arrow-right { right: 10px; } }
+        
+        /* Mobile-specific improvements */
+        @media (max-width: 768px) {
+            .nav-arrow { 
+                position: absolute; 
+                width: 40px; 
+                height: 40px; 
+                font-size: 18px;
+                top: auto;
+                bottom: 20px;
+                transform: none;
+            }
+            .arrow-left { left: 10px; } 
+            .arrow-right { right: 10px; }
+            
+            .close-circle { 
+                width: 35px; 
+                height: 35px; 
+                top: 10px; 
+                right: 10px; 
+                font-size: 16px;
+            }
+            
+            .gallery-item { 
+                width: 100px; 
+                height: 65px; 
+            }
+            
+            .scroll-arrow { 
+                width: 28px; 
+                height: 28px; 
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .arrow-left-g { left: -14px; } 
+            .arrow-right-g { right: -14px; }
+        }
+        
+        @media (max-width: 480px) {
+            .gallery-item { 
+                width: 80px; 
+                height: 52px; 
+            }
+            
+            .scroll-arrow { 
+                width: 24px; 
+                height: 24px; 
+            }
+            .arrow-left-g { left: -12px; } 
+            .arrow-right-g { right: -12px; }
+        }
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen">
@@ -217,15 +267,15 @@
         </div>
     </div>
     <div class="max-w-6xl mx-auto space-y-8">
-        <header class="flex justify-between items-end border-b border-white/5 pb-6">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-white/5 pb-6 gap-4">
             <div>
                 <div class="flex items-center gap-3">
-                    <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase">LUMINA VISUALS</h1>
+                    <h1 class="text-3xl sm:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 uppercase">LUMINA VISUALS</h1>
                     <span class="text-[10px] font-black text-white/20 tracking-widest uppercase mt-2">BETA</span>
                 </div>
-                <div class="flex items-center gap-4 mt-2">
+                <div class="flex flex-col sm:flex-col lg:flex-row items-start gap-2 lg:items-center lg:gap-4 mt-2">
                     <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em]">Vivid Visions Crafted</p>
-                    <div class="flex gap-2 border-l border-white/10 pl-4">
+                    <div class="flex gap-2 border-l border-white/10 pl-0 lg:pl-4">
                         <button onclick="openHelp()" class="help-badge">
                             <span class="help-icon">?</span>
                             <span>Guide</span>
@@ -239,9 +289,9 @@
             </div>
             <div id="server-status" class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest">Checking...</div>
         </header>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
             <div class="flex flex-col">
-                <div class="glass p-8 rounded-3xl space-y-6 border-white/5">
+                <div class="glass p-6 sm:p-8 rounded-3xl space-y-6 border-white/5">
                     <div class="space-y-2">
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prompt</label>
                         <textarea id="prompt" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-4 text-white text-sm" rows="4" placeholder="Enter your vision..."></textarea>
@@ -250,7 +300,7 @@
                         <label class="text-[10px] font-bold text-red-500/40 uppercase tracking-widest">Negative Prompt</label>
                         <textarea id="negative" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl p-3 text-white text-xs" rows="2" placeholder="Elements to avoid..."></textarea>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <select id="style" class="bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white">
                             <option value="none">None</option>
                             <option value="photorealistic">Photorealistic</option>
@@ -282,23 +332,23 @@
                     </a>
                 </div>
             </div>
-            <div class="lg:col-span-2 space-y-8">
-                <div id="preview-area" class="glass min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden border-white/5">
+            <div class="xl:col-span-2 space-y-8">
+                <div id="preview-area" class="glass min-h-[400px] sm:min-h-[500px] rounded-[2.5rem] flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden border-white/5">
                     <div id="loader" class="hidden flex flex-col items-center gap-4">
                         <div class="loader"></div>
                         <p class="text-[10px] font-black uppercase text-yellow-500 tracking-widest">Generation in progress...</p>
                         <p class="text-[8px] text-slate-500 uppercase tracking-wider">Harnessing Z-Image-Turbo engine</p>
                     </div>
-                    <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl max-h-[500px] rounded-2xl cursor-zoom-in" alt="Generated AI artwork">
-                    <div id="ph" class="text-8xl font-black italic opacity-5 uppercase select-none">Lumina</div>
-                    <button id="var-btn" onclick="generateVariation()" class="hidden absolute bottom-6 right-6 bg-black/40 backdrop-blur-xl px-6 py-3 rounded-full text-[10px] font-black uppercase border border-white/10 hover:bg-yellow-500 hover:text-black transition-all">Variation</button>
+                    <img id="out-img" onclick="openModal(0)" class="hidden shadow-2xl max-h-[400px] sm:max-h-[500px] rounded-2xl cursor-zoom-in" alt="Generated AI artwork">
+                    <div id="ph" class="text-6xl sm:text-8xl font-black italic opacity-5 uppercase select-none">Lumina</div>
+                    <button id="var-btn" onclick="generateVariation()" class="hidden absolute bottom-4 sm:bottom-6 right-4 sm:right-6 bg-black/40 backdrop-blur-xl px-4 sm:px-6 py-3 rounded-full text-[10px] font-black uppercase border border-white/10 hover:bg-yellow-500 hover:text-black transition-all">Variation</button>
                 </div>
-                <div class="glass p-6 rounded-3xl space-y-4 border-white/5">
-                    <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                <div class="glass p-4 sm:p-6 rounded-3xl space-y-4 border-white/5">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-white/5 pb-3">
                         <h2 class="text-[10px] font-black uppercase tracking-widest text-yellow-500">Session Gallery</h2>
-                        <div class="flex gap-3">
-                            <button onclick="downloadZip()" class="text-[9px] font-bold bg-white/5 px-4 py-2 rounded-full uppercase border border-white/10 hover:bg-white/10 transition-colors">Export ZIP</button>
-                            <button onclick="clearG()" class="text-[9px] font-bold text-red-500/50 px-4 py-2 rounded-full uppercase hover:text-red-500 transition-colors">Reset</button>
+                        <div class="flex gap-2 sm:gap-3">
+                            <button onclick="downloadZip()" class="text-[9px] font-bold bg-white/5 px-3 sm:px-4 py-2 rounded-full uppercase border border-white/10 hover:bg-white/10 transition-colors">Export ZIP</button>
+                            <button onclick="clearG()" class="text-[9px] font-bold text-red-500/50 px-3 sm:px-4 py-2 rounded-full uppercase hover:text-red-500 transition-colors">Reset</button>
                         </div>
                     </div>
                     <div class="gallery-container-rel">
@@ -557,7 +607,6 @@
                 alert('ZIP export failed');
             }
         }
-
         function downloadFormat(ext) {
             const item = fullHistory[currentIdx];
             const link = document.createElement('a');
@@ -565,7 +614,6 @@
             link.download = `lumina_art_${Date.now()}.${ext}`;
             link.click();
         }
-
         function clearG() {
             deleteTargetIdx = -2;
             document.getElementById('confirm-modal').style.display = 'flex';
